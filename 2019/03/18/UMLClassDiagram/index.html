@@ -1,0 +1,796 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="Chinese">
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2">
+
+<link rel="stylesheet" href="/css/main.css?v=7.0.1">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=7.0.1">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=7.0.1">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=7.0.1">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=7.0.1" color="#222">
+
+
+
+
+
+
+
+<script id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '7.0.1',
+    sidebar: {"position":"left","display":"post","offset":12,"onmobile":false,"dimmer":false},
+    back2top: true,
+    back2top_sidebar: false,
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="概述类图（Class Diagram）是描述类、接口、协作以及它们之间关系的图，用来显示系统中各个类的静态结构。类图是定义其他图的基础，在类图基础上，可以使用状态图、协作图、组件图和配置图等进一步描述系统其他方面的特性。 类图包括7个元素：类（Class）、接口（Interface）、协作（collaboration）、依赖关系（Dependency）、泛化关系（Generalization）、关">
+<meta name="keywords" content="UML">
+<meta property="og:type" content="article">
+<meta property="og:title" content="UMLClassDiagram">
+<meta property="og:url" content="http://yoursite.com/2019/03/18/UMLClassDiagram/index.html">
+<meta property="og:site_name" content="L&amp;F">
+<meta property="og:description" content="概述类图（Class Diagram）是描述类、接口、协作以及它们之间关系的图，用来显示系统中各个类的静态结构。类图是定义其他图的基础，在类图基础上，可以使用状态图、协作图、组件图和配置图等进一步描述系统其他方面的特性。 类图包括7个元素：类（Class）、接口（Interface）、协作（collaboration）、依赖关系（Dependency）、泛化关系（Generalization）、关">
+<meta property="og:locale" content="Chinese">
+<meta property="og:image" content="d:/githubWebsite/source/images/2799767-3f16972d7b062110.png">
+<meta property="og:image" content="d:/githubWebsite/source/images/1071603-20171122095942008-522706800.png">
+<meta property="og:image" content="d:/githubWebsite/source/images/1071603-20171122100109586-1582026693.jpg">
+<meta property="og:image" content="d:/githubWebsite/source/images/1071603-20171122100200290-1946335228.jpg">
+<meta property="og:image" content="d:/githubWebsite/source/images/1071603-20171122100240086-1421148234.jpg">
+<meta property="og:image" content="d:/githubWebsite/source/images/1071603-20171122100316165-918518126.jpg">
+<meta property="og:image" content="d:/githubWebsite/source/images/1071603-20171122100444118-201115809.jpg">
+<meta property="og:image" content="d:/githubWebsite/source/images/1071603-20171122100524696-522581923.jpg">
+<meta property="og:image" content="d:/githubWebsite/source/images/1071603-20171122100557102-897123625.jpg">
+<meta property="og:image" content="d:/githubWebsite/source/images/04e78de6.jpg">
+<meta property="og:updated_time" content="2019-03-18T02:03:19.319Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="UMLClassDiagram">
+<meta name="twitter:description" content="概述类图（Class Diagram）是描述类、接口、协作以及它们之间关系的图，用来显示系统中各个类的静态结构。类图是定义其他图的基础，在类图基础上，可以使用状态图、协作图、组件图和配置图等进一步描述系统其他方面的特性。 类图包括7个元素：类（Class）、接口（Interface）、协作（collaboration）、依赖关系（Dependency）、泛化关系（Generalization）、关">
+<meta name="twitter:image" content="d:/githubWebsite/source/images/2799767-3f16972d7b062110.png">
+
+
+
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2019/03/18/UMLClassDiagram/">
+
+
+
+<script id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>UMLClassDiagram | L&F</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .motion-element,
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-title { opacity: initial; }
+
+  .use-motion .logo,
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="Chinese">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">L&F</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+      
+        <p class="site-subtitle">Good Good Study Day Day Up</p>
+      
+    
+    
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="Navigationsleiste an/ausschalten">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-home">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br>Startseite</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-archives">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br>Archiv</a>
+
+  </li>
+
+      
+      
+    </ul>
+  
+
+  
+    
+
+  
+
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/03/18/UMLClassDiagram/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Lhy And Fyt">
+      <meta itemprop="description" content="This is a technique shareing blog">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="L&F">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">UMLClassDiagram
+
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Veröffentlicht am</span>
+              
+
+              
+                
+              
+
+              <time title="Erstellt: 2019-03-18 09:06:42 / Geändert am: 10:03:19" itemprop="dateCreated datePublished" datetime="2019-03-18T09:06:42+08:00">2019-03-18</time>
+            
+
+            
+              
+
+              
+            
+          </span>
+
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h4 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h4><p>类图（Class Diagram）是描述类、接口、协作以及它们之间关系的图，用来显示系统中各个类的静态结构。类图是定义其他图的基础，在类图基础上，可以使用状态图、协作图、组件图和配置图等进一步描述系统其他方面的特性。</p>
+<p>类图包括7个元素：类（Class）、接口（Interface）、协作（collaboration）、依赖关系（Dependency）、泛化关系（Generalization）、关联关系（Association）以及实现关系（Realization）。</p>
+<p>虚线箭头指向依赖；</p>
+<p>实线箭头指向关联；</p>
+<p>虚线三角指向接口；</p>
+<p>实线三角指向父类；</p>
+<p>空心菱形能分离而独立存在，是聚合；</p>
+<p>实心菱形精密关联不可分，是组合；</p>
+<p><img src="D:\githubWebsite\source\images\2799767-3f16972d7b062110.png" alt="2799767-3f16972d7b062110"></p>
+<h4 id="基本概念"><a href="#基本概念" class="headerlink" title="基本概念"></a>基本概念</h4><p>类图（Class Diagram）: 类图是面向对象系统建模中最常用和最重要的图，是定义其它图的基础。类图主要是用来显示系统中的类、接口以及它们之间的静态结构和关系的一种静态模型。</p>
+<p>类图的3个基本组件：类名、属性、方法。 </p>
+<p><img src="D:\githubWebsite\source\images\1071603-20171122095942008-522706800.png" alt="1071603-20171122095942008-522706800"></p>
+<p>泛化(generalization)：表示is-a的关系，是对象之间耦合度最大的一种关系，子类继承父类的所有细节。直接使用语言中的<strong>继承</strong>表达。在类图中使用带三角箭头的实线表示，箭头从子类指向父类。</p>
+<p><img src="D:\githubWebsite\source\images\1071603-20171122100109586-1582026693.jpg" alt="1071603-20171122100109586-1582026693"></p>
+<p>实现（Realization）:在类图中就是<strong>接口和实现</strong>的关系。这个没什么好讲的。在类图中使用带三角箭头的虚线表示，箭头从实现类指向接口。（<strong>接口：虚基类</strong>）</p>
+<p><img src="D:\githubWebsite\source\images\1071603-20171122100200290-1946335228.jpg" alt="1071603-20171122100200290-1946335228"></p>
+<p>依赖(Dependency)：对象之间最弱的一种关联方式，是临时性的关联。代码中一般指由<strong>局部变量、函数参数、返回值</strong>建立的对于其他对象的调用关系。一个类调用被依赖类中的某些方法而得以完成这个类的一些职责。在类图使用带箭头的虚线表示，箭头从使用类指向被依赖的类。(图中一个是利用函数参数建立依赖关系，一个是利用函数返回值建立依赖关系)</p>
+<p><img src="D:\githubWebsite\source\images\1071603-20171122100240086-1421148234.jpg" alt="1071603-20171122100240086-1421148234"></p>
+<p>关联(Association) : 对象之间一种引用关系，比如客户类与订单类之间的关系。这种关系通常使用类的属性表达。关联又分为一般关联、聚合关联与组合关联。后两种在后面分析。在类图使用带箭头的实线表示，箭头从使用类指向被关联的类。可以是单向和双向。（<strong>使用类A，被关联类B，B是A的成员变量类</strong>）</p>
+<p><img src="D:\githubWebsite\source\images\1071603-20171122100316165-918518126.jpg" alt="1071603-20171122100316165-918518126"></p>
+<p>聚合(Aggregation) : 表示has-a的关系，是一种不稳定的包含关系。较强于一般关联,有整体与局部的关系,并且没有了整体,局部也可单独存在。如公司和员工的关系，公司包含员工，但如果公司倒闭，员工依然可以换公司。在类图使用空心的菱形表示，菱形从局部指向整体。（<strong>整体类A，局部类B，B是A的成员变量类</strong>）</p>
+<p><img src="D:\githubWebsite\source\images\1071603-20171122100444118-201115809.jpg" alt="1071603-20171122100444118-201115809"></p>
+<p>组合(Composition) : 表示contains-a的关系，是一种强烈的包含关系。组合类负责被组合类的生命周期。是一种更强的聚合关系。部分不能脱离整体存在。如公司和部门的关系，没有了公司，部门也不能存在了；调查问卷中问题和选项的关系；订单和订单选项的关系。在类图使用实心的菱形表示，菱形从局部指向整体。（<strong>整体类A，局部类B，B是A的成员变量类</strong>）</p>
+<p><img src="D:\githubWebsite\source\images\1071603-20171122100524696-522581923.jpg" alt="1071603-20171122100524696-522581923"></p>
+<p>多重性(Multiplicity) : 通常在关联、聚合、组合中使用。就是代表有多少个关联对象存在。使用<strong>数字..星号（数字）</strong>表示。如下图，一个割接通知可以关联0个到N个故障单。</p>
+<p><img src="D:\githubWebsite\source\images\1071603-20171122100557102-897123625.jpg" alt="1071603-20171122100557102-897123625"></p>
+<h4 id="聚合和组合的区别"><a href="#聚合和组合的区别" class="headerlink" title="聚合和组合的区别"></a>聚合和组合的区别</h4><p>这两个比较难理解，重点说一下。聚合和组合的区别在于：聚合关系是“has-a”关系，组合关系是“contains-a”关系；聚合关系表示整体与部分的关系比较弱，而组合比较强；聚合关系中代表部分事物的对象与代表聚合事物的对象的生存期无关，一旦删除了聚合对象不一定就删除了代表部分事物的对象。组合中一旦删除了组合对象，同时也就删除了代表部分事物的对象。</p>
+<h4 id="实例分析"><a href="#实例分析" class="headerlink" title="实例分析"></a>实例分析</h4><p>联通客户响应OSS。系统有故障单、业务开通、资源核查、割接、业务重保、网络品质性能等功能模块。现在我们抽出部分需求做为例子讲解。</p>
+<p>大家可以参照着类图，好好理解。</p>
+<p><img src="D:\githubWebsite\source\images\04e78de6.jpg" alt="04e78de6"></p>
+<ol>
+<li>通知分为一般通知、割接通知、重保通知。这个是继承关系。</li>
+<li>NoticeService和实现类NoticeServiceImpl是实现关系。</li>
+<li>NoticeServiceImpl通过save方法的参数引用Notice,是依赖关系。同时调用了BaseDao完成功能，也是依赖关系。</li>
+<li>割接通知和故障单之间通过中间类(通知电路)关联，是一般关联。</li>
+<li>重保通知和预案库间是聚合关系。因为预案库可以事先录入，和重保通知没有必然联系，可以独立存在。在系统中是手工从列表中选择。删除重保通知，不影响预案。</li>
+<li>割接通知和需求单之间是聚合关系。同理，需求单可以独立于割接通知存在。也就是说删除割接通知，不影响需求单。</li>
+<li>通知和回复是组合关系。因为回复不能独立于通知存在。也就是说删除通知，该条通知对应的回复也要级联删除。</li>
+</ol>
+<p>经过以上的分析，相信大家对类的关系已经有比较好的理解了。大家有什么其它想法或好的见解，欢迎拍砖。</p>
+<p>参考文献：</p>
+<ol>
+<li>Uml.org.cn. (2019). <em>UML</em>. [online] Available at: <a href="http://www.uml.org.cn/oobject/201104212.asp" target="_blank" rel="noopener">http://www.uml.org.cn/oobject/201104212.asp</a> [Accessed 18 Mar. 2019].</li>
+</ol>
+
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/UML/" rel="tag"># UML</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/03/17/WebCtfWriteUp/" rel="next" title="WebCtfWriteUp">
+                <i class="fa fa-chevron-left"></i> WebCtfWriteUp
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+  </div>
+
+
+          </div>
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Inhaltsverzeichnis
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Übersicht
+          </li>
+        </ul>
+      
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">Lhy And Fyt</p>
+              <div class="site-description motion-element" itemprop="description">This is a technique shareing blog</div>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">4</span>
+                    <span class="site-state-item-name">Artikel</span>
+                  </a>
+                </div>
+              
+
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  
+                    
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">2</span>
+                    <span class="site-state-item-name">schlagwörter</span>
+                  
+                </div>
+              
+            </nav>
+          
+
+          
+
+          
+
+          
+
+          
+
+          
+          
+
+          
+            
+          
+          
+
+        </div>
+      </div>
+
+      
+      <!--noindex-->
+        <div class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+            
+            
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#概述"><span class="nav-number">1.</span> <span class="nav-text">概述</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#基本概念"><span class="nav-number">2.</span> <span class="nav-text">基本概念</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#聚合和组合的区别"><span class="nav-number">3.</span> <span class="nav-text">聚合和组合的区别</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#实例分析"><span class="nav-number">4.</span> <span class="nav-text">实例分析</span></a></li></ol></div>
+            
+
+          </div>
+        </div>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+  
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Lhy And Fyt</span>
+
+  
+
+  
+</div>
+
+
+  <div class="powered-by">Erstellt mit  <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> v3.8.0</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Design – <a href="https://theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> v7.0.1</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+    
+
+    
+  </div>
+
+  
+
+<script>
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+
+  
+
+
+  <script src="/js/src/utils.js?v=7.0.1"></script>
+
+  <script src="/js/src/motion.js?v=7.0.1"></script>
+
+
+
+  
+  
+
+
+  <script src="/js/src/schemes/muse.js?v=7.0.1"></script>
+
+
+
+  
+  <script src="/js/src/scrollspy.js?v=7.0.1"></script>
+<script src="/js/src/post-details.js?v=7.0.1"></script>
+
+
+
+  
+
+
+  <script src="/js/src/next-boot.js?v=7.0.1"></script>
+
+
+  
+
+  
+
+  
+
+  
+
+
+  
+
+
+  
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
