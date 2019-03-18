@@ -339,7 +339,7 @@
                 
               
 
-              <time title="Erstellt: 2019-03-18 09:06:42 / Geändert am: 10:03:19" itemprop="dateCreated datePublished" datetime="2019-03-18T09:06:42+08:00">2019-03-18</time>
+              <time title="Erstellt: 2019-03-18 09:06:42 / Geändert am: 11:01:40" itemprop="dateCreated datePublished" datetime="2019-03-18T09:06:42+08:00">2019-03-18</time>
             
 
             
@@ -388,28 +388,28 @@
 <p>实线三角指向父类；</p>
 <p>空心菱形能分离而独立存在，是聚合；</p>
 <p>实心菱形精密关联不可分，是组合；</p>
-<p><img src="D:\githubWebsite\source\images\2799767-3f16972d7b062110.png" alt="2799767-3f16972d7b062110"></p>
+<p><img src="/2019/03/18/UMLClassDiagram/2799767-3f16972d7b062110.png" alt="2799767-3f16972d7b062110"></p>
 <h4 id="基本概念"><a href="#基本概念" class="headerlink" title="基本概念"></a>基本概念</h4><p>类图（Class Diagram）: 类图是面向对象系统建模中最常用和最重要的图，是定义其它图的基础。类图主要是用来显示系统中的类、接口以及它们之间的静态结构和关系的一种静态模型。</p>
 <p>类图的3个基本组件：类名、属性、方法。 </p>
-<p><img src="D:\githubWebsite\source\images\1071603-20171122095942008-522706800.png" alt="1071603-20171122095942008-522706800"></p>
+<p><img src="/2019/03/18/UMLClassDiagram/1071603-20171122095942008-522706800.png" alt="1071603-20171122095942008-522706800"></p>
 <p>泛化(generalization)：表示is-a的关系，是对象之间耦合度最大的一种关系，子类继承父类的所有细节。直接使用语言中的<strong>继承</strong>表达。在类图中使用带三角箭头的实线表示，箭头从子类指向父类。</p>
-<p><img src="D:\githubWebsite\source\images\1071603-20171122100109586-1582026693.jpg" alt="1071603-20171122100109586-1582026693"></p>
+<p><img src="/2019/03/18/UMLClassDiagram/1071603-20171122100109586-1582026693.jpg" alt="1071603-20171122100109586-1582026693"></p>
 <p>实现（Realization）:在类图中就是<strong>接口和实现</strong>的关系。这个没什么好讲的。在类图中使用带三角箭头的虚线表示，箭头从实现类指向接口。（<strong>接口：虚基类</strong>）</p>
-<p><img src="D:\githubWebsite\source\images\1071603-20171122100200290-1946335228.jpg" alt="1071603-20171122100200290-1946335228"></p>
+<p><img src="/2019/03/18/UMLClassDiagram/1071603-20171122100200290-1946335228.jpg" alt="1071603-20171122100200290-1946335228"></p>
 <p>依赖(Dependency)：对象之间最弱的一种关联方式，是临时性的关联。代码中一般指由<strong>局部变量、函数参数、返回值</strong>建立的对于其他对象的调用关系。一个类调用被依赖类中的某些方法而得以完成这个类的一些职责。在类图使用带箭头的虚线表示，箭头从使用类指向被依赖的类。(图中一个是利用函数参数建立依赖关系，一个是利用函数返回值建立依赖关系)</p>
-<p><img src="D:\githubWebsite\source\images\1071603-20171122100240086-1421148234.jpg" alt="1071603-20171122100240086-1421148234"></p>
+<p><img src="/2019/03/18/UMLClassDiagram/1071603-20171122100240086-1421148234.jpg" alt="1071603-20171122100240086-1421148234"></p>
 <p>关联(Association) : 对象之间一种引用关系，比如客户类与订单类之间的关系。这种关系通常使用类的属性表达。关联又分为一般关联、聚合关联与组合关联。后两种在后面分析。在类图使用带箭头的实线表示，箭头从使用类指向被关联的类。可以是单向和双向。（<strong>使用类A，被关联类B，B是A的成员变量类</strong>）</p>
-<p><img src="D:\githubWebsite\source\images\1071603-20171122100316165-918518126.jpg" alt="1071603-20171122100316165-918518126"></p>
+<p><img src="/2019/03/18/UMLClassDiagram/1071603-20171122100316165-918518126.jpg" alt="1071603-20171122100316165-918518126"></p>
 <p>聚合(Aggregation) : 表示has-a的关系，是一种不稳定的包含关系。较强于一般关联,有整体与局部的关系,并且没有了整体,局部也可单独存在。如公司和员工的关系，公司包含员工，但如果公司倒闭，员工依然可以换公司。在类图使用空心的菱形表示，菱形从局部指向整体。（<strong>整体类A，局部类B，B是A的成员变量类</strong>）</p>
-<p><img src="D:\githubWebsite\source\images\1071603-20171122100444118-201115809.jpg" alt="1071603-20171122100444118-201115809"></p>
+<p><img src="/2019/03/18/UMLClassDiagram/1071603-20171122100444118-201115809.jpg" alt="1071603-20171122100444118-201115809"></p>
 <p>组合(Composition) : 表示contains-a的关系，是一种强烈的包含关系。组合类负责被组合类的生命周期。是一种更强的聚合关系。部分不能脱离整体存在。如公司和部门的关系，没有了公司，部门也不能存在了；调查问卷中问题和选项的关系；订单和订单选项的关系。在类图使用实心的菱形表示，菱形从局部指向整体。（<strong>整体类A，局部类B，B是A的成员变量类</strong>）</p>
-<p><img src="D:\githubWebsite\source\images\1071603-20171122100524696-522581923.jpg" alt="1071603-20171122100524696-522581923"></p>
+<p><img src="/2019/03/18/UMLClassDiagram/1071603-20171122100524696-522581923.jpg" alt="1071603-20171122100524696-522581923"></p>
 <p>多重性(Multiplicity) : 通常在关联、聚合、组合中使用。就是代表有多少个关联对象存在。使用<strong>数字..星号（数字）</strong>表示。如下图，一个割接通知可以关联0个到N个故障单。</p>
-<p><img src="D:\githubWebsite\source\images\1071603-20171122100557102-897123625.jpg" alt="1071603-20171122100557102-897123625"></p>
+<p><img src="/2019/03/18/UMLClassDiagram/1071603-20171122100557102-897123625.jpg" alt="1071603-20171122100557102-897123625"></p>
 <h4 id="聚合和组合的区别"><a href="#聚合和组合的区别" class="headerlink" title="聚合和组合的区别"></a>聚合和组合的区别</h4><p>这两个比较难理解，重点说一下。聚合和组合的区别在于：聚合关系是“has-a”关系，组合关系是“contains-a”关系；聚合关系表示整体与部分的关系比较弱，而组合比较强；聚合关系中代表部分事物的对象与代表聚合事物的对象的生存期无关，一旦删除了聚合对象不一定就删除了代表部分事物的对象。组合中一旦删除了组合对象，同时也就删除了代表部分事物的对象。</p>
 <h4 id="实例分析"><a href="#实例分析" class="headerlink" title="实例分析"></a>实例分析</h4><p>联通客户响应OSS。系统有故障单、业务开通、资源核查、割接、业务重保、网络品质性能等功能模块。现在我们抽出部分需求做为例子讲解。</p>
 <p>大家可以参照着类图，好好理解。</p>
-<p><img src="D:\githubWebsite\source\images\04e78de6.jpg" alt="04e78de6"></p>
+<p><img src="/2019/03/18/UMLClassDiagram/04e78de6.jpg" alt="04e78de6"></p>
 <ol>
 <li>通知分为一般通知、割接通知、重保通知。这个是继承关系。</li>
 <li>NoticeService和实现类NoticeServiceImpl是实现关系。</li>
@@ -425,144 +425,6 @@
 <li>Uml.org.cn. (2019). <em>UML</em>. [online] Available at: <a href="http://www.uml.org.cn/oobject/201104212.asp" target="_blank" rel="noopener">http://www.uml.org.cn/oobject/201104212.asp</a> [Accessed 18 Mar. 2019].</li>
 </ol>
 
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/03/17/WebCtfWriteUp/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Lhy And Fyt">
-      <meta itemprop="description" content="This is a technique shareing blog">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="L&F">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2019/03/17/WebCtfWriteUp/" class="post-title-link" itemprop="url">WebCtfWriteUp</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Veröffentlicht am</span>
-              
-
-              
-                
-              
-
-              <time title="Erstellt: 2019-03-17 16:12:38" itemprop="dateCreated datePublished" datetime="2019-03-17T16:12:38+08:00">2019-03-17</time>
-            
-
-            
-          </span>
-
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            
           
         
       
@@ -663,12 +525,24 @@
                 
               
 
-              <time title="Erstellt: 2019-03-17 10:14:26 / Geändert am: 16:19:27" itemprop="dateCreated datePublished" datetime="2019-03-17T10:14:26+08:00">2019-03-17</time>
+              <time title="Erstellt: 2019-03-17 10:14:26" itemprop="dateCreated datePublished" datetime="2019-03-17T10:14:26+08:00">2019-03-17</time>
             
 
             
               
 
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Bearbeitet am</span>
+                
+                <time title="Geändert am: 2019-03-18 11:00:09" itemprop="dateModified" datetime="2019-03-18T11:00:09+08:00">2019-03-18</time>
               
             
           </span>
@@ -719,11 +593,11 @@
 <h4 id="一、创建账号并开启GitHub-Page"><a href="#一、创建账号并开启GitHub-Page" class="headerlink" title="一、创建账号并开启GitHub Page"></a>一、创建账号并开启<code>GitHub Page</code></h4><p>​    创建账号就不赘述了，这里给出一个快速开启<code>GitHub Page</code>的方法。</p>
 <h5 id="1-创建一个-lt-username-gt-github-io的Repository"><a href="#1-创建一个-lt-username-gt-github-io的Repository" class="headerlink" title="1. 创建一个&lt;username&gt;.github.io的Repository"></a>1. 创建一个<code>&lt;username&gt;.github.io</code>的<code>Repository</code></h5><p>​    创建的这个Repository必须是”<code>用户名</code>“+”<code>.github.io</code>“的形式，这样<code>GitHub</code>的主机才能解析这个域名。</p>
 <p>如图所示：</p>
-<p><img src="D:\githubWebsite\source\images\20190317153031.png" alt="20190317153031"></p>
+<p><img src="/2019/03/17/How-to-Get-Start/20190317153031.png" alt="20190317153031"></p>
 <h5 id="2-在Repository的设置中开启GitHub-Page"><a href="#2-在Repository的设置中开启GitHub-Page" class="headerlink" title="2. 在Repository的设置中开启GitHub Page"></a>2. 在<code>Repository</code>的设置中开启<code>GitHub Page</code></h5><p>​    先要在Repository的设置中找到GitHub Pages栏，然后选择一个主题。</p>
 <p>​    （PS：此时所选主题与最后Blog的主题无关，所以可以随意选择）</p>
 <p>​    如图所示：</p>
-<p>​    <img src="D:\githubWebsite\source\images\20190317153625.png" alt="20190317153625"></p>
+<p>​    <img src="/2019/03/17/How-to-Get-Start/20190317153625.png" alt="20190317153625"></p>
 <p>​    选择完主题其实你的个人网站就已经开启了。个人网页就是你的Repository名。</p>
 <h4 id="二、本地安装Hexo"><a href="#二、本地安装Hexo" class="headerlink" title="二、本地安装Hexo"></a>二、本地安装Hexo</h4><p>​    安装 Hexo 相当简单。然而在安装前，您必须检查电脑中是否已安装下列应用程序：</p>
 <ul>
@@ -763,7 +637,7 @@
 <p>​    您可同时使用多个 deployer，Hexo 会依照顺序执行每个 deployer。</p>
 <p>​    为了之后方便部署，可以使用本地持久化的方式来记住登录用户名和密码。</p>
 <p>​    首先，在系统环境变量中设置一个环境变量<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">变量名 HOME</span><br><span class="line">变量值 %USERPROFILE%</span><br></pre></td></tr></table></figure></p>
-<p><img src="D:\githubWebsite\source\images\2019031701.jpg" alt="2019031701"></p>
+<p><img src="/2019/03/17/How-to-Get-Start/2019031701.jpg" alt="2019031701"></p>
 <p>​    接着在你的用户目录（C:\Users\username）下新建一个叫 _netrc的文件</p>
 <p>​    编辑这个文件</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">machine github.com</span><br><span class="line">login username</span><br><span class="line">password password</span><br></pre></td></tr></table></figure>
@@ -1005,7 +879,7 @@
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">4</span>
+                    <span class="site-state-item-count">3</span>
                     <span class="site-state-item-name">Artikel</span>
                   </a>
                 </div>
