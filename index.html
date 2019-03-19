@@ -294,6 +294,208 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/03/19/How-to-Establish-a-Minecraft-Server/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Lhy And Fyt">
+      <meta itemprop="description" content="This is a technique shareing blog">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="L&F">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2019/03/19/How-to-Establish-a-Minecraft-Server/" class="post-title-link" itemprop="url">How to Establish a Minecraft Server</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Veröffentlicht am</span>
+              
+
+              
+                
+              
+
+              <time title="Erstellt: 2019-03-19 21:07:14 / Geändert am: 22:46:28" itemprop="dateCreated datePublished" datetime="2019-03-19T21:07:14+08:00">2019-03-19</time>
+            
+
+            
+              
+
+              
+            
+          </span>
+
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h4 id="1-配置服务器："><a href="#1-配置服务器：" class="headerlink" title="1.配置服务器："></a>1.配置服务器：</h4><ol>
+<li><p>首先安装Java-8-jdk</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">wget --no-cookies --no-check-certificate --header <span class="string">"Cookie: gpw_e24=http%3A%2F%2Fwww.oracle.com%2F; oraclelicense=accept-securebackup-cookie"</span> https://download.oracle.com/otn-pub/java/jdk/8u201-b09/42970487e3af4f5aa5bca3f542482c60/jdk-8u201-linux-x64.tar.gz <span class="comment"># wget 下载Java 8 jdk</span></span><br><span class="line">mkdir /usr/java	<span class="comment"># 创建java系统运行目录</span></span><br><span class="line">cp jdk-8u201-linux-x64.tar.gz /usr/java <span class="comment">#将jdk.tar包复制到系统运行环境</span></span><br><span class="line"><span class="built_in">cd</span> /usr/java</span><br><span class="line">tar -zxvf jdk-8u201-linux-x64.tar.gz <span class="comment"># 将jdk.tar包解压</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>设置系统环境变量</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">vi /etc/profile</span><br></pre></td></tr></table></figure>
+<p>将如下内容追加到profile文件内。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#set java environment</span></span><br><span class="line"><span class="built_in">export</span> JAVA_HOME=/usr/java/jdk-8u201-linux-x64 <span class="comment">#此处要修改为你存放java的目录      </span></span><br><span class="line"><span class="built_in">export</span> JRE_HOME=<span class="variable">$&#123;JAVA_HOME&#125;</span>/jre</span><br><span class="line"><span class="built_in">export</span> CLASSPATH=.:<span class="variable">$JAVA_HOME</span>/lib:<span class="variable">$JRE_HOME</span>/lib:<span class="variable">$CLASSPATH</span></span><br><span class="line"><span class="built_in">export</span> PATH=<span class="variable">$JAVA_HOME</span>/bin:<span class="variable">$JRE_HOME</span>/bin:<span class="variable">$PATH</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>更新环境变量</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">source</span> /etc/profile <span class="comment">#使更新后的环境变量生效</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>测试java是否安装成功</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">javac <span class="comment"># 将会显示java编译器的相关信息</span></span><br><span class="line">java -version <span class="comment"># 将会显示java的版本信息，若出错请参考出错信息Google</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>安装MineCraft服务器</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo wget https://s3.amazonaws.com/Minecraft.Download/versions/1.12/minecraft_server.1.12.jar <span class="comment">#这里下载MineCraft服务器，此处为1.12为例</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>启动MineCraft服务器</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">free -h <span class="comment"># 查看当前内存使用情况</span></span><br><span class="line">sudo java -Xms500m -Xmx600m -jar /home/mc/minecraft_server.1.12.jar nogui <span class="comment">#启动服务器时需要指定运行内存范围，此处具体数值需要参照内存使用情况。分给MC服务器的内存越大越好，但也不能将整个系统的内存沾满。系统内存使用率在80%为宜。</span></span><br><span class="line"><span class="comment"># ！！！但是，第一次启动服务器一定会运行失败，因为默认没有同意用户协议。</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>同意用户协议再启动</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">vi eula.txt <span class="comment"># 此文件包含用户协议同意情况</span></span><br></pre></td></tr></table></figure>
+<p>将<code>eula</code>的值改为<code>true</code>。保存并推出。</p>
+</li>
+<li><p>修改服务器配置</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">vi server.propertices <span class="comment"># 这个文件中有众多的服务器配置，有些需要修改</span></span><br></pre></td></tr></table></figure>
+<p>将<code>online-mode</code>的值改为<code>false</code>，这个值是用来检查正版的……</p>
+</li>
+<li><p>创建MC启动shell脚本</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">vi start.sh</span><br></pre></td></tr></table></figure>
+<p>输入如下内容：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#!/bin/sh</span></span><br><span class="line"><span class="built_in">source</span> /ect/profile</span><br><span class="line">java -Xms500m -Xmx600m -jar /home/mc/minecraft_server.1.12.jar nogui</span><br></pre></td></tr></table></figure>
+<p>这样就可以让脚本帮助我们敲命令了。每次启动只需要运行如下命令</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">bash start.sh</span><br></pre></td></tr></table></figure>
+</li>
+</ol>
+<h4 id="2-配置客户端："><a href="#2-配置客户端：" class="headerlink" title="2. 配置客户端："></a>2. 配置客户端：</h4><ol>
+<li><p>需要下载并安装使用<a href="https://hmcl.huangyuhui.net/download" target="_blank" rel="noopener">HMCL（Hello MineCraft Launcher）</a></p>
+<p><img src="/2019/03/19/How-to-Establish-a-Minecraft-Server/20190319220525.png" alt="20190319220525"></p>
+</li>
+<li><p>创建一个离线模式的用户</p>
+</li>
+</ol>
+<p>   <img src="/2019/03/19/How-to-Establish-a-Minecraft-Server/githubWebsite\source\_posts\2019-03-19-How-to-Establish-a-Minecraft-Server\20190319220924.png" alt="20190319220924"></p>
+<ol start="3">
+<li><p>安装与服务器相同版本的客户端，我们这里选用1.12</p>
+<p><img src="/2019/03/19/How-to-Establish-a-Minecraft-Server/20190319220842.png" alt="20190319220842"></p>
+</li>
+<li><p>连接服务器IP</p>
+</li>
+</ol>
+<h4 id="常见问题："><a href="#常见问题：" class="headerlink" title="常见问题："></a>常见问题：</h4><ul>
+<li><p>wget 下载https类型文件 需要加一个参数<code>--no-check-certificate</code></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">wget --no-check-certificate https://我们下载文件路径</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>如何后台执行命令？screen命令可以很好完成任务。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#screen也叫虚拟终端，可以在一个物理终端上实现多个虚拟终端的效果。</span></span><br><span class="line"><span class="comment">#在screen的虚拟终端里面运行你的指令，要断开连接之前先把screen挂起，下次连进来的时候你只需要重新连接你的screen，你会发现你的指令已经乖乖地执行完毕或者正在执行而不是被迫中断了。</span></span><br><span class="line"><span class="comment">#一般以上的用法已经足够，如果需要更多，请直接screen --help。顺便说一下，一般发行版是不带这个软件的，你需要自行安装，ubuntu下面就直接sudo apt-get install screen。</span></span><br><span class="line">$ screen -S xxx <span class="comment">#创建名为XXX的虚拟终端</span></span><br><span class="line">$ ctrl+a+d <span class="comment">#挂起虚拟终端</span></span><br><span class="line">$ screen -ls <span class="comment">#列出当前挂起的所有终端</span></span><br><span class="line">$ screen -r terminal.id <span class="comment">#重新连接挂起后的终端</span></span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/03/18/UMLClassDiagram/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -879,7 +1081,7 @@
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">3</span>
+                    <span class="site-state-item-count">4</span>
                     <span class="site-state-item-name">Artikel</span>
                   </a>
                 </div>
@@ -898,7 +1100,9 @@
                     
                       
                     
-                    <span class="site-state-item-count">2</span>
+                      
+                    
+                    <span class="site-state-item-count">3</span>
                     <span class="site-state-item-name">schlagwörter</span>
                   
                 </div>
