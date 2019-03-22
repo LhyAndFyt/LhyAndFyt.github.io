@@ -1,0 +1,906 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2">
+
+<link rel="stylesheet" href="/css/main.css?v=7.0.1">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=7.0.1">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=7.0.1">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=7.0.1">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=7.0.1" color="#222">
+
+
+
+
+
+
+
+<script id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '7.0.1',
+    sidebar: {"position":"left","display":"post","offset":12,"onmobile":false,"dimmer":false},
+    back2top: true,
+    back2top_sidebar: false,
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="0. 摘要我们提出了一种新的通过对抗过程估计生成模型的框架，其中我们同时训练两个模型：捕获数据分布的生成模型G和估计样本来自训练数据而不是G的概率的识别模型D。G的训练过程是最大化D犯错误的可能性。这个框架对应一个极大极小的两人游戏。在任意函数g和d的空间中，存在一个独特的解决方案，g恢复训练数据的分布，d处处等于1/2。在G和D由多层感知器定义的情况下，整个系统可以通过反向传播进行训练。在样本的">
+<meta name="keywords" content="GAN">
+<meta property="og:type" content="article">
+<meta property="og:title" content="GAN">
+<meta property="og:url" content="http://yoursite.com/2019/03/22/GAN/index.html">
+<meta property="og:site_name" content="L&amp;F">
+<meta property="og:description" content="0. 摘要我们提出了一种新的通过对抗过程估计生成模型的框架，其中我们同时训练两个模型：捕获数据分布的生成模型G和估计样本来自训练数据而不是G的概率的识别模型D。G的训练过程是最大化D犯错误的可能性。这个框架对应一个极大极小的两人游戏。在任意函数g和d的空间中，存在一个独特的解决方案，g恢复训练数据的分布，d处处等于1/2。在G和D由多层感知器定义的情况下，整个系统可以通过反向传播进行训练。在样本的">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://yoursite.com/2019/03/22/GAN/20190322120832.png">
+<meta property="og:image" content="http://yoursite.com/2019/03/22/GAN/201903221220832.png">
+<meta property="og:image" content="http://yoursite.com/2019/03/22/GAN/20190322121926.png">
+<meta property="og:image" content="http://yoursite.com/2019/03/22/GAN/20190322142407.png">
+<meta property="og:image" content="http://yoursite.com/2019/03/22/GAN/20190322142949.png">
+<meta property="og:image" content="http://yoursite.com/2019/03/22/GAN/20190322143437.png">
+<meta property="og:image" content="http://yoursite.com/2019/03/22/GAN/20190322143719.png">
+<meta property="og:image" content="http://yoursite.com/2019/03/22/GAN/20190322144848.png">
+<meta property="og:image" content="http://yoursite.com/2019/03/22/GAN/20190322150734.jpg">
+<meta property="og:image" content="http://yoursite.com/2019/03/22/GAN/20190322152835.png">
+<meta property="og:updated_time" content="2019-03-22T07:31:25.896Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="GAN">
+<meta name="twitter:description" content="0. 摘要我们提出了一种新的通过对抗过程估计生成模型的框架，其中我们同时训练两个模型：捕获数据分布的生成模型G和估计样本来自训练数据而不是G的概率的识别模型D。G的训练过程是最大化D犯错误的可能性。这个框架对应一个极大极小的两人游戏。在任意函数g和d的空间中，存在一个独特的解决方案，g恢复训练数据的分布，d处处等于1/2。在G和D由多层感知器定义的情况下，整个系统可以通过反向传播进行训练。在样本的">
+<meta name="twitter:image" content="http://yoursite.com/2019/03/22/GAN/20190322120832.png">
+
+
+
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2019/03/22/GAN/">
+
+
+
+<script id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>GAN | L&F</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .motion-element,
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-title { opacity: initial; }
+
+  .use-motion .logo,
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">L&F</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+      
+        <p class="site-subtitle">Good Good Study Day Day Up</p>
+      
+    
+    
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="Navigationsleiste an/ausschalten">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-home">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br>Startseite</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-about">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/about/" rel="section"><i class="menu-item-icon fa fa-fw fa-user"></i> <br>Über</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-tags">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/tags/" rel="section"><i class="menu-item-icon fa fa-fw fa-tags"></i> <br>Schlagwörter</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-categories">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/categories/" rel="section"><i class="menu-item-icon fa fa-fw fa-th"></i> <br>Kategorien</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-archives">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br>Archiv</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-schedule">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/schedule/" rel="section"><i class="menu-item-icon fa fa-fw fa-calendar"></i> <br>Zeitplan</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-sitemap">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/sitemap.xml" rel="section"><i class="menu-item-icon fa fa-fw fa-sitemap"></i> <br>Sitemap</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-commonweal">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/404/" rel="section"><i class="menu-item-icon fa fa-fw fa-heartbeat"></i> <br>Commonweal 404</a>
+
+  </li>
+
+      
+      
+    </ul>
+  
+
+  
+
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+            
+
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/03/22/GAN/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Lhy And Fyt">
+      <meta itemprop="description" content="This is a technique shareing blog">
+      <meta itemprop="image" content="/uploads/20190320100718.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="L&F">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">GAN
+
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Veröffentlicht am</span>
+              
+
+              
+                
+              
+
+              <time title="Erstellt: 2019-03-22 09:24:34 / Geändert am: 15:31:25" itemprop="dateCreated datePublished" datetime="2019-03-22T09:24:34+08:00">2019-03-22</time>
+            
+
+            
+              
+
+              
+            
+          </span>
+
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h4 id="0-摘要"><a href="#0-摘要" class="headerlink" title="0. 摘要"></a>0. 摘要</h4><p>我们提出了一种新的通过对抗过程估计生成模型的框架，其中我们同时训练两个模型：捕获数据分布的生成模型G和估计样本来自训练数据而不是G的概率的识别模型D。G的训练过程是最大化D犯错误的可能性。这个框架对应一个极大极小的两人游戏。在任意函数g和d的空间中，存在一个独特的解决方案，g恢复训练数据的分布，d处处等于1/2。在G和D由多层感知器定义的情况下，整个系统可以通过反向传播进行训练。在样本的训练或生成过程中，不需要任何马尔可夫链或展开的近似推理网络。通过对生成的样本进行定性和定量评估，实验证明了框架的潜力。</p>
+<h4 id="1-介绍"><a href="#1-介绍" class="headerlink" title="1. 介绍"></a>1. 介绍</h4><p>深入学习的希望在于发现丰富的层次模型[2]，这些模型表示人工智能应用中遇到的各种数据的概率分布，如自然图像、包含语音的音频波形以及自然语言语料库中的符号。到目前为止，在深度学习中最显著的成功涉及到歧视性模型，通常是那些将高维、丰富的感官输入映射到班级标签上的模型[14，20]。这些显著的成功主要是基于反向传播和退出算法，使用具有特别好的梯度的分段线性单元[17、8、9]。由于在最大似然估计和相关策略中难以近似许多难以处理的概率计算，以及在生成环境中难以利用分段线性单元的优势，深层生成模型的影响较小。我们提出了一种新的生成模型估计方法，避免了这些困难。 </p>
+<p>在所提出的对抗性网络框架中，生成性模型与对手相抗衡：一种识别性模型，它学习确定样本是来自模型分布还是数据分布。生成模型可以被认为类似于一个伪造者团队，试图生产假币并在没有检测的情况下使用它，而识别模型类似于警察，试图检测假币。在这场比赛中，双方都在努力改进自己的方法，直到伪造品与真品无法区分。 </p>
+<p>该框架可以为多种模型和优化算法生成特定的训练算法。本文探讨了生成模型通过多层感知器传递随机噪声产生样本的特殊情况，识别模型也是多层感知器。我们将这一特殊情况称为敌对网。在这种情况下，我们可以只使用非常成功的反向传播和退出算法[16]来训练这两个模型，并且只使用正向传播从生成模型中抽取样本。不需要近似推理或马尔可夫链。 </p>
+<h4 id="2-相关工作"><a href="#2-相关工作" class="headerlink" title="2. 相关工作"></a>2. 相关工作</h4><p>直到最近，大多数关于深生成模型的工作都集中在提供概率分布函数参数化规范的模型上。然后可以通过最大化日志可能性来训练模型。在这个模型家族中，也许最成功的是DeepBoltzmann机器[25]。此类模型通常具有难以处理的似然函数，因此需要对似然梯度进行多次近似。这些困难推动了“生成机器”的发展——这种模型不明确地表示可能性，但能够从所需的分布中生成样本。生成随机网络[4]是生成机器的一个例子，它可以通过精确的反向传播而不是Boltzmann机器所需的大量近似来训练。这项工作通过消除生成随机网络中使用的马尔可夫链扩展了生成机器的概念。 </p>
+<p>我们的工作是通过生成过程反向传播导数，通过观察<img src="/2019/03/22/GAN/20190322120832.png" alt="20190322120832"></p>
+<p>当我们开发这项工作时，我们不知道Kingma和Welling[18]以及Rezende等人[23]开发了更通用的随机反传播规则，允许通过具有有限方差的高斯分布反传播玛瑙，并反传播到协方差参数和平均值。这些反向传播规则可以让我们了解生成器的条件方差，在本文中我们将其视为超参数。Kingma and Welling[18]和Rezende等人[23]使用随机反向传播训练变分自动编码器（VAES）。与生成对抗网络一样，变分自动编码器将一个可微发生器网络与另一个神经网络配对。与生成对抗网络不同，虚拟环境中的辅助网络是执行近似推理的识别模型。GAN需要通过可见单元进行区分，因此不能对离散数据建模，而VAE需要通过隐藏单元进行区分，因此不能具有离散的潜在变量。其他类似阀门的方法也存在[12，22]，但与我们的方法不太密切。 </p>
+<p>以前的工作也采取了使用歧视性标准来训练生成模型的方法[29，13]。这些方法使用了深生成模型难以处理的标准。对于深层模型，这些方法甚至很难近似，因为它们涉及的概率比不能用降低概率界限的变分近似来近似。噪声对比估计（NCE）[13]通过学习权重来训练生成模型，使模型有助于区分固定噪声分布中的数据。使用以前训练过的模型作为噪声分布，可以训练一系列提高质量的模型。这可以被看作是一种非正式的竞争机制，在精神上类似于对抗性网络游戏中使用的正式请愿书。NCE的关键局限性在于它的“鉴别器”是由噪声分布和模型分布的概率密度之比定义的，因此需要通过这两种密度评估和反向传播的能力。 </p>
+<p>以前的一些研究使用了两个神经网络竞争的一般概念。最相关的工作是可预测性最小化[26]。在可预测性最小化中，神经网络中的每个隐藏单元都被训练为不同于第二个网络的输出，后者根据所有其他隐藏单元的值来预测该隐藏单元的值。这项工作不同于可预测性最小化的三个重要方面：1）在这项工作中，网络之间的竞争是唯一的训练标准，并且本身就足以训练网络。可预测性最小化只是一个规则化器，它鼓励神经网络的隐藏单元在完成其他任务时保持独立，而不是主要的训练标准。2）比赛性质不同。在可预测性最小化中，比较了两个网络的输出，一个网络尝试使输出相似，另一个网络尝试使输出不同。所讨论的输出是单个标量。在gans中，一个网络产生一个丰富的高维向量，用作另一个网络的输入，并试图选择另一个网络不知道如何处理的输入。3）学习过程的规范不同。可预测性最小化被描述为一个目标函数最小化的优化问题，学习接近目标函数的最小值。GAN基于一个极大极小博弈而不是一个优化问题，并且具有一个代理寻求最大化和另一个代理寻求最小化的价值函数。游戏结束于一个鞍点，对于一个玩家的策略是最小的，对于另一个玩家的策略是最大的。</p>
+<p>生成性对抗性网络有时与“对抗性实例”的相关概念相混淆[28]。相反的例子是通过直接在分类网络的输入上使用基于梯度的优化来找到的例子，以便找到与数据相似但分类错误的例子。这与目前的工作不同，因为对抗性的例子不是训练生成模型的机制。相反，敌对的例子主要是一种分析工具，用来显示神经网络的行为方式很有趣，通常自信地对两个图像进行不同的分类，并具有很高的信心，即使它们之间的差异是人类观察者无法察觉的。这种对抗性例子的存在确实表明，生成性对抗性网络训练可能是低效的，因为它们表明，可以使现代辨别性网络自信地识别一个类，而不模仿该类的任何人类可感知属性。</p>
+<h4 id="3-对抗网络"><a href="#3-对抗网络" class="headerlink" title="3. 对抗网络"></a>3. 对抗网络</h4><p>当模型都是多层感知器时，对立的建模框架最容易应用。为了了解发生器在数据x上的分布p g，我们定义了输入噪声变量p z（z），然后将到数据空间的映射表示为g（z；θg），其中g是由参数θg的多层感知器表示的可微函数。我们还定义了第二个输出单个标量的多层感知器d（x；θd）。d（x）表示x来自数据而不是p g的概率。我们训练d以最大化将正确标签分配给训练示例和g样本的概率。我们同时训练g以最小化日志（1-d（g（z））。换句话说，D和G使用值函数v（g，d）玩以下两个玩家的minimax游戏：</p>
+<p><img src="/2019/03/22/GAN/201903221220832.png" alt="201903221220832"></p>
+<p>在下一节中，我们对对抗性网络进行了理论分析，实质上表明训练标准允许恢复G和D具有足够能力的数据生成分布，即在非参数极限下。请参见图1，了解对该方法不太正式、更具教学意义的解释。在实践中，我们必须使用迭代的数值方法来实现博弈。在训练的内环中优化d到完成是计算上的禁忌，在有限的数据集上会导致过度拟合。相反，我们在优化d的k个步骤和优化g的一个步骤之间交替进行，这导致d保持在其最优解附近，只要g变化足够慢。程序在算法1中正式给出。</p>
+<p>在实践中，方程1可能不能为G提供足够的梯度来学习。在学习早期，当g很差时，d可以很有信心地拒绝样本，因为它们与培训数据明显不同。在这种情况下，对数（1-d（g（z））饱和。我们可以训练G最大化log d（g（z）），而不是训练G最小化log d（1-d（g（z））。这个目标函数导致G和D的动力学固定点相同，但在学习早期提供了更强的梯度。</p>
+<h4 id="4-理论成果"><a href="#4-理论成果" class="headerlink" title="4. 理论成果"></a>4. 理论成果</h4><p>生成器G隐式地将概率分布p g定义为当z～p z时获得的样本g（z）的分布。因此，如果有足够的容量和训练时间，我们希望算法1收敛到一个很好的P数据估计量。本节的结果是在非参数设置下完成的，例如，我们通过研究概率密度函数空间的收敛性来表示具有无限容量的模型。</p>
+<p>我们将在第4.1节中说明，这个极大极小博弈对p g=p数据具有全局最优。然后，我们将在第4.2节中展示算法1优化等式1，从而获得所需的结果。</p>
+<p><img src="/2019/03/22/GAN/20190322121926.png" alt="20190322121926"></p>
+<p>图1：通过同时更新区分分布（D、蓝色、虚线），对生成性敌对网络进行训练，从而区分数据生成分布（黑色、虚线）p x的样本与生成性分布p g（g）（绿色、实线）的样本。在这种情况下，下水平线是Z的采样区域。上面的水平线是x域的一部分。向上箭头显示了映射x=g（z）如何在变换的样本上施加非均匀分布p g。G在高密度区域收缩，在低密度区域扩张。（a）考虑一对接近收敛的对立对：p g与p数据相似，d是一个部分准确的分类器。（b）在算法的内环中，D被训练来区分样本和数据，收敛到D（x）=P数据（x）P数据（x）+P G（x）。（c）更新到g之后，d的梯度引导g（z）流向更可能被归类为数据的区域。（d）经过几步培训后，如果G和D有足够的能力，他们将达到一个点，因为P G=P数据，两者都无法改善。鉴别器无法区分这两个分布，即d（x）=12。</p>
+<p><img src="/2019/03/22/GAN/20190322142407.png" alt="20190322142407"></p>
+<h5 id="4-1-全局最优的-p-g-p-data"><a href="#4-1-全局最优的-p-g-p-data" class="headerlink" title="4.1 全局最优的 $p_g = p_{data}$"></a>4.1 全局最优的 $p_g = p_{data}$</h5><p>我们首先考虑任何给定的G发生器的最佳鉴别器D。</p>
+<p><img src="/2019/03/22/GAN/20190322142949.png" alt="20190322142949"></p>
+<p>证明。对于鉴别器d，任何发生器g的训练标准都是使v（g，d）的数量最大化。 </p>
+<p><img src="/2019/03/22/GAN/20190322143437.png" alt="20190322143437"></p>
+<p><img src="/2019/03/22/GAN/20190322143719.png" alt="20190322143719"></p>
+<p>在实际应用中，对抗网通过函数g（z；θg）表示一个有限的p g分布族，我们优化了θg而不是p g本身，因此证明不适用。然而，多层感知器在实际应用中的优异性能表明，多层感知器是一种合理的模型，尽管缺乏理论保证。</p>
+<p><img src="/2019/03/22/GAN/20190322144848.png" alt="20190322144848"></p>
+<p>表1：基于parzen窗口的日志可能性估计。mnist上报告的数字是测试集上样本的平均对数似然，通过实例计算平均值的标准误差。在tfd上，我们计算了数据集折叠的标准误差，使用每个折叠的验证集选择不同的σ。在TFD上，对各倍数的σ进行交叉验证，并计算各倍数的平均对数似然。对于mnist，我们将其与数据集的实值（而不是二进制）版本的其他模型进行比较。</p>
+<h4 id="5-实验"><a href="#5-实验" class="headerlink" title="5.实验"></a>5.实验</h4><p>我们训练了一系列的数据集，包括mnist[21]、多伦多人脸数据库（tfd）[27]和cifar-10[19]。发电机网络使用整流器线性激活[17，8]和乙状结肠激活的混合，而鉴别器网络使用MaxOut[9]激活。辍学[16]被用于训练鉴别器网络。虽然我们的理论框架允许在发电机的中间层使用衰减和其他噪声，但我们只使用噪声作为发电机网络最底层的输入。</p>
+<p>我们通过将高斯Parzen窗口拟合到G生成的样本，并报告该分布下的对数似然性，来估计P G下测试集数据的概率。通过对验证集的交叉验证，得到了高斯函数的σ参数。此程序在Breuleux等人中介绍。[7]并用于精确似然性不可追踪的各种生成模型[24、3、4]。结果见表1。这种估计似然性的方法有点高的方差，在高维空间中表现不好，但它是我们所知道的最好的方法。生成模型的研究进展可以直接对可能性进行抽样而不进行估计，这将促使人们进一步研究如何对这些模型进行评估。在图2和图3中，我们展示了培训后从发电机网中提取的样本。虽然我们没有声称这些样本比现有方法生成的样本更好，但我们相信这些样本至少与文献中更好的生成模型具有竞争力，并突出了对抗性框架的潜力。</p>
+<h4 id="6-优点和缺点"><a href="#6-优点和缺点" class="headerlink" title="6.优点和缺点"></a>6.优点和缺点</h4><p>与以前的建模框架相比，这个新框架有很多优点和缺点。缺点主要是P G（x）没有明确的表示，D在训练过程中必须与G保持良好的同步（特别是，在不更新d的情况下，G不能接受过多的训练，以避免“Helvetica方案”，在这种方案中，G将Z的过多值折叠为x的相同值，从而具有足够的多样性。为了建立P数据模型），就像玻尔兹曼机器的负链在学习步骤之间必须保持最新一样。它的优点是不需要马尔可夫链，只需要使用backprop来获取梯度，在学习过程中不需要进行推理，模型中可以包含多种函数。表2总结了生成对抗网与其他生成建模方法的比较。</p>
+<p>上述优点主要是计算性的。敌方模型也可能从生成器网络中获得一些统计优势，而不是直接用数据检查来更新，而是只使用流经鉴别器的梯度。这意味着输入的组件不会直接复制到生成器的参数中。对抗网络的另一个优点是，它们可以表示非常尖锐的、甚至是退化的分布，而基于马尔可夫链的方法要求分布有点模糊，以便链能够在模式之间混合。</p>
+<h4 id="7-结论和未来工作"><a href="#7-结论和未来工作" class="headerlink" title="7.结论和未来工作"></a>7.结论和未来工作</h4><p>这个框架允许许多简单的扩展：</p>
+<p><img src="/2019/03/22/GAN/20190322150734.jpg" alt="20190322150734"></p>
+<ol>
+<li>条件生成模型p（x_c）可以通过在g和d中添加c作为输入得到。</li>
+<li>学习的近似推理可以通过训练辅助网络来预测给定x的z。这类似于通过唤醒睡眠算法[15]训练的推理网络，但其优点是，在生成网络完成训练后，推理网络可以训练为固定的生成网络。</li>
+<li>我们可以通过训练一系列共享参数的条件模型来近似模拟所有条件p（x s_x 6s），其中s是x的索引的子集。本质上，我们可以使用对抗性网络来实现确定性MP-DBM[10]的随机扩展。</li>
+<li>半监督学习：当有限的标记数据可用时，来自鉴别器或推理网络的特征可以提高分类器的性能。</li>
+<li>效率提高：通过设计更好的方法来协调G和D，或者在培训期间确定更好的Z样本分布，可以大大加速培训。</li>
+</ol>
+<p>本文论证了对抗性建模框架的可行性，表明这些研究方向是有用的。</p>
+<p><img src="/2019/03/22/GAN/20190322152835.png" alt="20190322152835"></p>
+<h4 id="8-致谢"><a href="#8-致谢" class="headerlink" title="8. 致谢"></a>8. 致谢</h4><p>我们感谢Patrice Marcotte、Olivier Delalleau、Kyunghyun Cho、Guillaume Alain和Jason Yosinski的帮助。延恩·多芬和我们分享了他的Parzen Window评估代码。我们要感谢pylearn2[11]和theano[6，1]的开发人员，特别是fr_d_ric bastien，他们专门为这个项目开发了theano功能。在L A T E X排版方面，Ar-NaudBergeron提供了急需的支持。我们还要感谢CIFAR和加拿大研究主席的资助，以及加拿大计算机和Calculal Qu_bec提供的计算资源。伊恩·古德费罗获得了2013年谷歌深度学习奖学金的支持。最后，我们要感谢Les Trois Brasseurs激发我们的创造力。</p>
+
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/GAN/" rel="tag"># GAN</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/03/19/How-to-Establish-a-Minecraft-Server/" rel="next" title="How to Establish a Minecraft Server">
+                <i class="fa fa-chevron-left"></i> How to Establish a Minecraft Server
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+  </div>
+
+
+          </div>
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Inhaltsverzeichnis
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Übersicht
+          </li>
+        </ul>
+      
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="/uploads/20190320100718.jpg" alt="Lhy And Fyt">
+            
+              <p class="site-author-name" itemprop="name">Lhy And Fyt</p>
+              <div class="site-description motion-element" itemprop="description">This is a technique shareing blog</div>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">5</span>
+                    <span class="site-state-item-name">Artikel</span>
+                  </a>
+                </div>
+              
+
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">4</span>
+                    <span class="site-state-item-name">schlagwörter</span>
+                  
+                </div>
+              
+            </nav>
+          
+
+          
+
+          
+
+          
+
+          
+
+          
+          
+
+          
+            
+          
+          
+
+        </div>
+      </div>
+
+      
+      <!--noindex-->
+        <div class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+            
+            
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#0-摘要"><span class="nav-number">1.</span> <span class="nav-text">0. 摘要</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#1-介绍"><span class="nav-number">2.</span> <span class="nav-text">1. 介绍</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-相关工作"><span class="nav-number">3.</span> <span class="nav-text">2. 相关工作</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-对抗网络"><span class="nav-number">4.</span> <span class="nav-text">3. 对抗网络</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#4-理论成果"><span class="nav-number">5.</span> <span class="nav-text">4. 理论成果</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#4-1-全局最优的-p-g-p-data"><span class="nav-number">5.1.</span> <span class="nav-text">4.1 全局最优的 $p_g = p_{data}$</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#5-实验"><span class="nav-number">6.</span> <span class="nav-text">5.实验</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#6-优点和缺点"><span class="nav-number">7.</span> <span class="nav-text">6.优点和缺点</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#7-结论和未来工作"><span class="nav-number">8.</span> <span class="nav-text">7.结论和未来工作</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#8-致谢"><span class="nav-number">9.</span> <span class="nav-text">8. 致谢</span></a></li></ol></div>
+            
+
+          </div>
+        </div>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+  
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Lhy And Fyt</span>
+
+  
+
+  
+</div>
+
+
+  <div class="powered-by">Erstellt mit  <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> v3.8.0</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Design – <a href="https://theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> v7.0.1</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+    
+
+    
+  </div>
+
+  
+
+<script>
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+
+  
+
+
+  <script src="/js/src/utils.js?v=7.0.1"></script>
+
+  <script src="/js/src/motion.js?v=7.0.1"></script>
+
+
+
+  
+  
+
+
+  <script src="/js/src/affix.js?v=7.0.1"></script>
+
+  <script src="/js/src/schemes/pisces.js?v=7.0.1"></script>
+
+
+
+
+  
+  <script src="/js/src/scrollspy.js?v=7.0.1"></script>
+<script src="/js/src/post-details.js?v=7.0.1"></script>
+
+
+
+  
+
+
+  <script src="/js/src/next-boot.js?v=7.0.1"></script>
+
+
+  
+
+  
+
+  
+
+  
+
+
+  
+
+
+  
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
