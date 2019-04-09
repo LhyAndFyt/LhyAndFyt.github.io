@@ -396,6 +396,339 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/04/09/How-to-Write-a-Spider/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Lhy And Fyt">
+      <meta itemprop="description" content="This is a technique shareing blog.">
+      <meta itemprop="image" content="/uploads/20190320100718.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="L&F">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2019/04/09/How-to-Write-a-Spider/" class="post-title-link" itemprop="url">How to Write a Spider</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-04-09 20:05:09 / 修改时间：21:21:19" itemprop="dateCreated datePublished" datetime="2019-04-09T20:05:09+08:00">2019-04-09</time>
+            
+
+            
+              
+
+              
+            
+          </span>
+
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h5 id="找到爬取目标"><a href="#找到爬取目标" class="headerlink" title="找到爬取目标"></a>找到爬取目标</h5><p>要想通过机器爬取数据，必须先知道数据在哪，通过什么样的方式获取数据。</p>
+<p>一般先打开要爬取的网站，再通过<code>审查元素</code>的方式查看要爬取网站的网页结构。选取要爬取数据最具特点的内容作为搜索标记（例如下载论文的img），然后制定爬取规则进行爬取。</p>
+<p>制定爬取规则是整个爬虫过程最为重要的过程，好的爬取规则可以事半功倍。</p>
+<p>例如，在我的爬虫项目中，我们要爬取的目标对象附近总会有一个”PDF”的图像 <img src="/2019/04/09/How-to-Write-a-Spider/pdf_logo.gif" alt="pdf_logo">，而其他部分没有这个图像<img src="/2019/04/09/How-to-Write-a-Spider/pdf_logo.gif" alt="pdf_logo">，我们就可以使用这个图像作为我爬取规则的关键字。（这种提取关键字的思想可以参考TF-IDF）</p>
+<h5 id="使用好工具"><a href="#使用好工具" class="headerlink" title="使用好工具"></a>使用好工具</h5><p>对于一般的小型爬虫项目，使用Request库+BeautifulSoup库是非常方便的。Request库为Python提供一个使用HTTP协议的API，BeautifulSoup库为Python处理HTML格式文件的API，两者结合可以快速完成一般的网络爬取项目。</p>
+<p>Requests 允许你发送<strong>纯天然，植物饲养</strong>的 HTTP/1.1 请求，无需手工劳动。你不需要手动为<br>URL 添加查询字串，也不需要对 POST 数据进行表单编码。Keep-alive 和 HTTP 连接池的功能是<br>100% 自动化的，一切动力都来自于根植在 Requests 内部的 <a href="https://github.com/shazow/urllib3" target="_blank" rel="noopener">urllib3</a>。（更多介绍参考<a href="http://docs.python-requests.org/zh_CN/latest/index.html" target="_blank" rel="noopener">Request中文文档</a>）</p>
+<p><a href="http://www.crummy.com/software/BeautifulSoup/" target="_blank" rel="noopener">Beautiful Soup</a> 是一个可以从HTML或XML文件中提取数据的Python库.它能够通过你喜欢的转换器实现惯用的文档导航,查找,修改文档的方式.Beautiful Soup会帮你节省数小时甚至数天的工作时间。（更多介绍参考<a href="https://beautifulsoup.readthedocs.io/zh_CN/latest/" target="_blank" rel="noopener">BeautifulSoup中文文档</a>）</p>
+<h5 id="编程模板"><a href="#编程模板" class="headerlink" title="编程模板"></a>编程模板</h5><ol>
+<li><p>引入所需要的库</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> requests <span class="comment">#Request库，用以使用HTTP协议</span></span><br><span class="line"><span class="keyword">from</span> bs4 <span class="keyword">import</span> BeautifulSoup <span class="comment"># BeautifulSoup库，用以解析HTML格式文件</span></span><br><span class="line"><span class="keyword">import</span> time	<span class="comment">#Time库，用以延时下载（sleep（5）反反爬）</span></span><br></pre></td></tr></table></figure>
+<p>其中Time库，用以引入sleep（）函数，如果目标网站通过访问间隔进行限制用户访问，一般爬取很容易爬到403禁止访问页面。因此我们需要sleep（）函数进行反反爬。</p>
+</li>
+<li><p>获取目标页面并解析</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">GetPage</span><span class="params">()</span>:</span></span><br><span class="line">    <span class="keyword">try</span>:</span><br><span class="line">        url = <span class="string">"yoursite.com"</span> <span class="comment"># 你目标网站的URL</span></span><br><span class="line">        headers = &#123;<span class="string">'user-agent'</span>: <span class="string">'Mozilla/5.0'</span>&#125; <span class="comment"># 修改头文件欺骗目标站点</span></span><br><span class="line">        r = requests.get(url=url,headers=headers) <span class="comment"># 构建HTTP数据包并发送给目标站点</span></span><br><span class="line">        r.raise_for_status() <span class="comment"># 检查是否返回正确页面</span></span><br><span class="line">        r.encoding = r.apparent_encoding <span class="comment"># 使用最有可能的解码方式进行解码</span></span><br><span class="line">        <span class="keyword">return</span> r <span class="comment"># 返回爬到的数据</span></span><br><span class="line">    <span class="keyword">except</span>:</span><br><span class="line">        <span class="keyword">return</span> <span class="string">"产生异常"</span></span><br><span class="line">        </span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">'__main__'</span>:</span><br><span class="line">    r = GetPage()</span><br><span class="line">    soup = BeautifulSoup(r.text,<span class="string">'html.parser'</span>) <span class="comment"># 将爬到的数据让BeautifulSoup以html格式解码</span></span><br></pre></td></tr></table></figure>
+<p>本项目是爬取某学术会议的论文集，所以并不需要扩散式的爬取，仅需将某页面上的所有论文PDF及其题目摘要爬取下来。</p>
+</li>
+<li><p>根据具体的爬取规则实现爬取</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span> pdf <span class="keyword">in</span> soup.find_all(<span class="string">'img'</span>): <span class="comment"># 上接 main 函数</span></span><br><span class="line">    <span class="keyword">if</span> pdf[<span class="string">'src'</span>] == <span class="string">"imagetypes/pdf_logo.gif"</span>:</span><br><span class="line">   </span><br><span class="line">    PdfFather = pdf.parent.parent.parent.parent</span><br><span class="line">    <span class="comment"># 找到论文PDF下载地址</span></span><br><span class="line">    DownloadLink=pdf.parent[<span class="string">"href"</span>]</span><br><span class="line">   </span><br><span class="line">    <span class="comment"># 找到论文的题目</span></span><br><span class="line">    TitleFather = PdfFather.previous_sibling</span><br><span class="line">    Title = GetText(TitleFather.get_text())[<span class="number">0</span>]</span><br><span class="line">   </span><br><span class="line">    <span class="comment"># 找到论文的摘要</span></span><br><span class="line">    AbstractFather = PdfFather.next_sibling</span><br><span class="line">    AbstractFather = PdfFather.next_sibling</span><br><span class="line">    Abstract = <span class="number">0</span></span><br><span class="line">    <span class="keyword">for</span> AbstractFather <span class="keyword">in</span> PdfFather.next_siblings:</span><br><span class="line">        <span class="keyword">if</span> str(type(AbstractFather)) ==<span class="string">"&lt;class 'bs4.element.NavigableString'&gt;"</span>:</span><br><span class="line">            <span class="keyword">continue</span></span><br><span class="line">        temp = GetText(AbstractFather.get_text()) <span class="comment"># 将爬到的摘要前后的空格与回车去掉</span></span><br><span class="line">        Abstract = temp</span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">GetText</span><span class="params">(temp)</span>:</span><span class="comment"># 将爬到的摘要前后的空格与回车去掉</span></span><br><span class="line">    first = <span class="number">-1</span></span><br><span class="line">    rear = <span class="number">0</span></span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> range(len(temp)):</span><br><span class="line">        <span class="keyword">if</span> temp[i] == <span class="string">'\n'</span> <span class="keyword">or</span> temp[i] == <span class="string">' '</span>:</span><br><span class="line">            <span class="keyword">continue</span></span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            first = i</span><br><span class="line">            <span class="keyword">break</span></span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> range(len(temp)):</span><br><span class="line">        <span class="keyword">if</span> temp[-(i + <span class="number">1</span>)] == <span class="string">'\n'</span> <span class="keyword">or</span> temp[-(i + <span class="number">1</span>)] == <span class="string">' '</span>:</span><br><span class="line">            <span class="keyword">continue</span></span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            rear = -(i + <span class="number">1</span>)</span><br><span class="line">            <span class="keyword">break</span></span><br><span class="line">    temp = temp[first:rear + <span class="number">1</span>]</span><br><span class="line">    temp = temp.split(<span class="string">"\n"</span>)</span><br><span class="line">    <span class="keyword">return</span> temp</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>将爬到的东西下载到本地</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">headers = &#123;<span class="string">'user-agent'</span>: <span class="string">'Mozilla/5.0'</span>&#125;</span><br><span class="line">time.sleep(<span class="number">5</span>)</span><br><span class="line">r = requests.get(url=DownloadLink,headers=headers)</span><br><span class="line"><span class="keyword">with</span> open(Title+<span class="string">".pdf"</span>, <span class="string">"wb"</span>) <span class="keyword">as</span> code:</span><br><span class="line">    code.write(r.content)</span><br><span class="line"><span class="keyword">if</span> Abstract!=<span class="literal">None</span>:</span><br><span class="line">    <span class="keyword">with</span> open(Title + <span class="string">".txt"</span>, <span class="string">"w"</span>,encoding=<span class="string">'utf-8'</span>) <span class="keyword">as</span> code:</span><br><span class="line">        code.write(Abstract)</span><br></pre></td></tr></table></figure>
+</li>
+</ol>
+<h5 id="常见错误："><a href="#常见错误：" class="headerlink" title="常见错误："></a>常见错误：</h5><ol>
+<li><p>被反爬</p>
+<p>由于利用Request库进行GET操作时，HTTP报头会表示客户端为Python，所以很容易被针对。检测HTTP报头Agent字段是最简单的反爬机制，如果目标网站还有其他反爬机制，请参考更多文献。</p>
+<p>在本项目中，我们将Agent改为“Mozilla/5.0”即可越过反爬机制。具体代码如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">url = <span class="string">"yoursite.com"</span></span><br><span class="line">headers = &#123;<span class="string">'user-agent'</span>: <span class="string">'Mozilla/5.0'</span>&#125;</span><br><span class="line">r = requests.get(url=url,headers=headers)</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>编码出错</p>
+<p>由于window新建文件的默认编码为GBK，而Request库爬到的数据默认编码为UTF-8，虽然在写入文件时Python会自动将UTF8码转为GBK，但是一些特殊字符是不能转换成功的。因此我们应以UTF8格式新建文件。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">with</span> open(Title + <span class="string">".txt"</span>, <span class="string">"w"</span>,encoding=<span class="string">'utf-8'</span>) <span class="keyword">as</span> code:</span><br><span class="line">	code.write(Abstract)</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>BeautifulSoup使用规范</p>
+<p>在BeautifulSoup中，可以跨标签寻找子孙，只要我们知道目标标签的标签类型。</p>
+<p>例如：通过点取属性的方式能获得当前名字的第一个tag:</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">soup.a</span><br><span class="line"><span class="comment"># &lt;a class="sister" href="http://example.com/elsie" id="link1"&gt;Elsie&lt;/a&gt;</span></span><br></pre></td></tr></table></figure>
+<p>但是，在BeautifulSoup中不能跨标签使用.string和.strings参数。</p>
+<p>例如：如果tag包含了多个子节点,tag就无法确定 <code>.string</code> 方法应该调用哪个子节点的内容, <code>.string</code> 的输出结果是 <code>None</code> :</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">print(soup.html.string)</span><br><span class="line"><span class="comment"># None</span></span><br></pre></td></tr></table></figure>
+</li>
+</ol>
+<p>   幸运的是，我们可以使用get_text()方法获取非叶子结点的所有<code>NavigableString</code> 子孙，并返回一个连接到一起的字符串（而非字符串的集合）。</p>
+<p>   例如，如果tag中包含多个字符串 <a href="https://beautifulsoup.readthedocs.io/zh_CN/latest/#id89" target="_blank" rel="noopener">[2]</a> ,可以使用 <code>.strings</code> 来循环获取:</p>
+   <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span> string <span class="keyword">in</span> soup.strings:</span><br><span class="line">    print(repr(string))</span><br><span class="line">    <span class="comment"># u"The Dormouse's story"</span></span><br><span class="line">    <span class="comment"># u'\n\n'</span></span><br><span class="line">    <span class="comment"># u"The Dormouse's story"</span></span><br><span class="line">    <span class="comment"># u'\n\n'</span></span><br><span class="line">    <span class="comment"># u'Once upon a time there were three little sisters; and their names were\n'</span></span><br><span class="line">    <span class="comment"># u'Elsie'</span></span><br><span class="line">    <span class="comment"># u',\n'</span></span><br><span class="line">    <span class="comment"># u'Lacie'</span></span><br><span class="line">    <span class="comment"># u' and\n'</span></span><br><span class="line">    <span class="comment"># u'Tillie'</span></span><br><span class="line">    <span class="comment"># u';\nand they lived at the bottom of a well.'</span></span><br><span class="line">    <span class="comment"># u'\n\n'</span></span><br><span class="line">    <span class="comment"># u'...'</span></span><br><span class="line">    <span class="comment"># u'\n'</span></span><br></pre></td></tr></table></figure>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/03/25/Someting-Special/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Lhy And Fyt">
+      <meta itemprop="description" content="This is a technique shareing blog.">
+      <meta itemprop="image" content="/uploads/20190320100718.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="L&F">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2019/03/25/Someting-Special/" class="post-title-link" itemprop="url">Someting Special</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-03-25 12:07:13 / 修改时间：15:19:33" itemprop="dateCreated datePublished" datetime="2019-03-25T12:07:13+08:00">2019-03-25</time>
+            
+
+            
+              
+
+              
+            
+          </span>
+
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h5 id="中文目录："><a href="#中文目录：" class="headerlink" title="中文目录："></a>中文目录：</h5><p>要想让next显示中文字体，应该在站点配置文件中修改语言为主题中一共的语言解析方式。</p>
+<p>而且解析方式为主题语言解析目录下的文件名。因此，站点语言应该设置为zh-CN而非zh-Hans</p>
+<h5 id="域名解析："><a href="#域名解析：" class="headerlink" title="域名解析："></a>域名解析：</h5><p>在域名解析时两边应该都使用CNAME方式进行绑定，而非A的方式。</p>
+<h5 id="网站访问过慢："><a href="#网站访问过慢：" class="headerlink" title="网站访问过慢："></a>网站访问过慢：</h5>
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/03/25/GOF-Structure-2/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1544,7 +1877,7 @@
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">6</span>
+                    <span class="site-state-item-count">8</span>
                     <span class="site-state-item-name">日志</span>
                   </a>
                 </div>
@@ -1569,7 +1902,11 @@
                     
                       
                     
-                    <span class="site-state-item-count">5</span>
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">7</span>
                     <span class="site-state-item-name">标签</span>
                   
                 </div>
