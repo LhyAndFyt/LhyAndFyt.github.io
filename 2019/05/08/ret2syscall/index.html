@@ -98,19 +98,19 @@
 
 
 
-  <meta name="description" content="ROP 原理：主函数通过__cdcall方式进行函数压栈： PUSH PART2 PUSH PART1 主函数通过call指令完成指令转移： call( PUSH EIP JUMP NEXT ) 子函数开辟堆栈空间： PUSH ESP  MOV EBP, ESP SUB ESP, 80H 子函数清空栈空间并返回上级函数栈空间： LEAVE( MOV ESP,EBP POP EBP ) 子函数通过R">
+  <meta name="description" content="ROP 原理：主函数通过__cdcall方式进行函数压栈： PUSH PART2 PUSH PART1 主函数通过call指令完成指令转移： call( PUSH EIP JUMP NEXT ) 子函数开辟堆栈空间： PUSH EBP MOV EBP, ESP SUB ESP, 80H 子函数清空栈空间并返回上级函数栈空间： LEAVE( MOV ESP,EBP POP EBP ) 子函数通过RE">
 <meta name="keywords" content="ROP,PWN">
 <meta property="og:type" content="article">
 <meta property="og:title" content="ret2syscall">
 <meta property="og:url" content="http://yoursite.com/2019/05/08/ret2syscall/index.html">
 <meta property="og:site_name" content="L&amp;F">
-<meta property="og:description" content="ROP 原理：主函数通过__cdcall方式进行函数压栈： PUSH PART2 PUSH PART1 主函数通过call指令完成指令转移： call( PUSH EIP JUMP NEXT ) 子函数开辟堆栈空间： PUSH ESP  MOV EBP, ESP SUB ESP, 80H 子函数清空栈空间并返回上级函数栈空间： LEAVE( MOV ESP,EBP POP EBP ) 子函数通过R">
+<meta property="og:description" content="ROP 原理：主函数通过__cdcall方式进行函数压栈： PUSH PART2 PUSH PART1 主函数通过call指令完成指令转移： call( PUSH EIP JUMP NEXT ) 子函数开辟堆栈空间： PUSH EBP MOV EBP, ESP SUB ESP, 80H 子函数清空栈空间并返回上级函数栈空间： LEAVE( MOV ESP,EBP POP EBP ) 子函数通过RE">
 <meta property="og:locale" content="zh-CN">
 <meta property="og:image" content="http://yoursite.com/2019/05/08/ret2syscall/ROP.png">
-<meta property="og:updated_time" content="2019-05-08T13:34:00.181Z">
+<meta property="og:updated_time" content="2019-05-12T03:17:11.221Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="ret2syscall">
-<meta name="twitter:description" content="ROP 原理：主函数通过__cdcall方式进行函数压栈： PUSH PART2 PUSH PART1 主函数通过call指令完成指令转移： call( PUSH EIP JUMP NEXT ) 子函数开辟堆栈空间： PUSH ESP  MOV EBP, ESP SUB ESP, 80H 子函数清空栈空间并返回上级函数栈空间： LEAVE( MOV ESP,EBP POP EBP ) 子函数通过R">
+<meta name="twitter:description" content="ROP 原理：主函数通过__cdcall方式进行函数压栈： PUSH PART2 PUSH PART1 主函数通过call指令完成指令转移： call( PUSH EIP JUMP NEXT ) 子函数开辟堆栈空间： PUSH EBP MOV EBP, ESP SUB ESP, 80H 子函数清空栈空间并返回上级函数栈空间： LEAVE( MOV ESP,EBP POP EBP ) 子函数通过RE">
 <meta name="twitter:image" content="http://yoursite.com/2019/05/08/ret2syscall/ROP.png">
 
 
@@ -442,12 +442,24 @@
                 
               
 
-              <time title="创建时间：2019-05-08 21:10:36 / 修改时间：21:34:00" itemprop="dateCreated datePublished" datetime="2019-05-08T21:10:36+08:00">2019-05-08</time>
+              <time title="创建时间：2019-05-08 21:10:36" itemprop="dateCreated datePublished" datetime="2019-05-08T21:10:36+08:00">2019-05-08</time>
             
 
             
               
 
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2019-05-12 11:17:11" itemprop="dateModified" datetime="2019-05-12T11:17:11+08:00">2019-05-12</time>
               
             
           </span>
@@ -490,7 +502,7 @@
 <p>JUMP NEXT</p>
 <p>)</p>
 <p>子函数开辟堆栈空间：</p>
-<p>PUSH ESP </p>
+<p>PUSH EBP</p>
 <p>MOV EBP, ESP</p>
 <p>SUB ESP, 80H</p>
 <p>子函数清空栈空间并返回上级函数栈空间：</p>
@@ -630,6 +642,10 @@
 
           <div class="post-nav-prev post-nav-item">
             
+              <a href="/2019/05/11/GOT-and-PLT/" rel="prev" title="GOT and PLT">
+                GOT and PLT <i class="fa fa-chevron-right"></i>
+              </a>
+            
           </div>
         </div>
       
@@ -699,7 +715,7 @@
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">9</span>
+                    <span class="site-state-item-count">11</span>
                     <span class="site-state-item-name">日志</span>
                   </a>
                 </div>
@@ -732,7 +748,13 @@
                     
                       
                     
-                    <span class="site-state-item-count">9</span>
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">12</span>
                     <span class="site-state-item-name">标签</span>
                   
                 </div>
@@ -791,7 +813,7 @@
 
     <footer id="footer" class="footer">
       <div class="footer-inner">
-        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
   <span class="with-love" id="animate">
     <i class="fa fa-user"></i>
   </span>

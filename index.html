@@ -396,6 +396,410 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/03/08/How-to-Install-TensorFlow1-x-and-2-x-GPU-Supported-on-Windows/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Lhy And Fyt">
+      <meta itemprop="description" content="This is a technique shareing blog.">
+      <meta itemprop="image" content="/uploads/20190320100718.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="L&F">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2020/03/08/How-to-Install-TensorFlow1-x-and-2-x-GPU-Supported-on-Windows/" class="post-title-link" itemprop="url">How to Install TensorFlow1.x and 2.x GPU Supported on Windows</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2020-03-08 14:38:10 / 修改时间：14:39:47" itemprop="dateCreated datePublished" datetime="2020-03-08T14:38:10+08:00">2020-03-08</time>
+            
+
+            
+              
+
+              
+            
+          </span>
+
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h4 id="1-概述"><a href="#1-概述" class="headerlink" title="1. 概述"></a>1. 概述</h4><p>目前神经网络的编程框架仍然主要使用TensorFlow，尤其在TensorFlow2.0之后，使用TensorFlow框架编程可以像其他Python库一样直接编写。从个人使用角度讲，其优点包括但不限于：</p>
+<ol>
+<li>隐化计算图构建过程，使得学习壁垒降低，对新手更加友好。</li>
+<li>TensorFlow2.0的Keras API更加好用，可以实现一行一层神经网络，几行完成整个神经网络的设计。</li>
+<li>梯度计算更加方便，只要设计好神经网络，选定输入和输出神经元，即可自动实现后向传播算法，以计算梯度。</li>
+</ol>
+<p>但是，目前主流的TensorFlow存在两个版本，并且两个版本的编程方式存在的不小的差异，为适应复现不用项目的需求，以及学习各种基于神经网络的项目，在本机系统上同时支持两个版本的TensorFlow是有必要的，本教程主要介绍如何在Windows上进行TensorFlow1.x和TensorFlow2.x的同时环境配置。</p>
+<p>需要说明的是，TensorFlow1.x是区分CPU版本和GPU版本的，而TensorFlow2.X是不区分的，如果有GPU并配置好了环境会自动搭载GPU运行程序。同时因为TensorFlow1.x的CPU版本较为简单，因此本教程只对TensorFlow1.x和进行TensorFlow2.x的GPU版本进行配置。</p>
+<h4 id="2-基础环境搭建"><a href="#2-基础环境搭建" class="headerlink" title="2.  基础环境搭建"></a>2.  基础环境搭建</h4><p>由于要对双版本的TensorFlow进行支持，这里推荐创建两个Python的虚拟环境（virtualenv）分别安装，并在使用时选择特定的虚拟环境下的Python执行任务。</p>
+<h5 id="查看本机是否安装了Python3、pip3、virtualenv。"><a href="#查看本机是否安装了Python3、pip3、virtualenv。" class="headerlink" title="查看本机是否安装了Python3、pip3、virtualenv。"></a>查看本机是否安装了Python3、pip3、virtualenv。</h5><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">python3 --version</span><br><span class="line">pip3 --version</span><br><span class="line">virtualenv --version</span><br></pre></td></tr></table></figure>
+<p>如果已经所需的环境包都已经安装，则继续安装Windows系统缺失的动态链接库环境。</p>
+<h5 id="包环境安装"><a href="#包环境安装" class="headerlink" title="包环境安装"></a>包环境安装</h5><ul>
+<li>如果未安装Python3，可以到官网下载并安装，同时pip3会随同Python3一起被安装：<a href="https://www.python.org/downloads/windows/" target="_blank" rel="noopener">Python 3 release for Windows</a></li>
+<li>如果未安装virtualenv，可以使用如下命令安装：pip3 install -U pip virtualenv</li>
+</ul>
+<h5 id="系统库环境安装"><a href="#系统库环境安装" class="headerlink" title="系统库环境安装"></a>系统库环境安装</h5><p>由于TensorFlow2.1.0之后需要Microsoft Visual C++关于<em>Visual Studio 2015, 2017, and 2019</em>的支持。对于未安装 <em>Visual Studio 2019</em>的用户需要另行安装此支持，以实现<code>msvcp140_1.dll</code>对TensorFlow2.1.0的支持。</p>
+<ul>
+<li>到 <a href="https://support.microsoft.com/en-us/help/2977003/the-latest-supported-visual-c-downloads/" target="_blank" rel="noopener">Microsoft Visual C++ downloads</a>选取适合自己系统的<em>Visual C++ 2015, 2017 and 2019</em>支持，例如<a href="https://aka.ms/vs/16/release/vc_redist.x64.exe" target="_blank" rel="noopener">vc_redist.x64.exe</a>。</li>
+<li>同时保证开启Windows下的长路径许可： <a href="https://superuser.com/questions/1119883/windows-10-enable-ntfs-long-paths-policy-option-missing" target="_blank" rel="noopener">long paths are enabled</a></li>
+</ul>
+<h5 id="建立虚拟环境并开启-关闭环境"><a href="#建立虚拟环境并开启-关闭环境" class="headerlink" title="建立虚拟环境并开启/关闭环境"></a>建立虚拟环境并开启/关闭环境</h5><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 跟新系统环境下的pip</span></span><br><span class="line">pip install --upgrade pip</span><br><span class="line"></span><br><span class="line"><span class="comment"># 为TensorFlow1.x GPU创建虚拟环境</span></span><br><span class="line">virtualenv --system-site-packages -p python3 ./venv_tf_1x_gpu</span><br><span class="line"><span class="comment"># 为TensorFlow2.x 创建虚拟环境</span></span><br><span class="line"><span class="comment"># virtualenv --system-site-packages -p python3 ./venv_tf_2x</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 启动虚拟环境</span></span><br><span class="line">./venv_tf_1x_gpu/Scripts/activate</span><br><span class="line"></span><br><span class="line"><span class="comment"># 展示该虚拟环境下的所有Python包</span></span><br><span class="line">pip list  <span class="comment"># show packages installed within the virtual environment</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 退出虚拟环境</span></span><br><span class="line">deactivate  <span class="comment"># don't exit until you're done using TensorFlow</span></span><br></pre></td></tr></table></figure>
+<h4 id="3-TensorFlow-1-x-GPU支持-安装教程"><a href="#3-TensorFlow-1-x-GPU支持-安装教程" class="headerlink" title="3. TensorFlow 1.x  GPU支持 安装教程"></a>3. TensorFlow 1.x  GPU支持 安装教程</h4><h5 id="环境配置要求："><a href="#环境配置要求：" class="headerlink" title="环境配置要求："></a>环境配置要求：</h5><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">scipy==1.2.1</span><br><span class="line">CUDA==10.0</span><br><span class="line">cudnn==7.4</span><br><span class="line">tensorflow-gpu==1.15</span><br></pre></td></tr></table></figure>
+<p>更多版本之间的对应关系参考链接<a href="https://blog.csdn.net/qq_27825451/article/details/89082978" target="_blank" rel="noopener">https://blog.csdn.net/qq_27825451/article/details/89082978</a></p>
+<h5 id="安装TensorFlow-1-x-GPU"><a href="#安装TensorFlow-1-x-GPU" class="headerlink" title="安装TensorFlow 1.x GPU"></a>安装TensorFlow 1.x GPU</h5><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 开启venv_tf_1x_gpu虚拟Python环境</span></span><br><span class="line">./venv_tf_1x_gpu/Scripts/activate</span><br><span class="line"></span><br><span class="line"><span class="comment"># 将scipy版本降级到1.2.1</span></span><br><span class="line">pip install scipy==1.2.1</span><br><span class="line"></span><br><span class="line"><span class="comment"># 安装TensorFlow1.5 GPU版本</span></span><br><span class="line">pip install tensorflow-gpu==1.15  <span class="comment"># GPU</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 测试TensorFlow是否安装成功</span></span><br><span class="line">python -c <span class="string">"import tensorflow as tf;print(tf.reduce_sum(tf.random.normal([1000, 1000])))"</span></span><br><span class="line"><span class="comment"># 此处会显示是否采用了GPU的支持，即便GPU支持未开启，此处代码也可运行。若想获得GPU支持，请继续参考如下步骤。</span></span><br></pre></td></tr></table></figure>
+<h5 id="配置GPU环境支持"><a href="#配置GPU环境支持" class="headerlink" title="配置GPU环境支持"></a>配置GPU环境支持</h5><ul>
+<li><a href="https://www.nvidia.com/drivers" target="_blank" rel="noopener">NVIDIA® GPU drivers</a> —CUDA 10.1 requires 418.x or higher.</li>
+<li><a href="https://developer.nvidia.com/cuda-toolkit-archive" target="_blank" rel="noopener">CUDA® Toolkit</a> —TensorFlow supports CUDA 10.0 (TensorFlow = 1.5)</li>
+<li><a href="http://docs.nvidia.com/cuda/cupti/" target="_blank" rel="noopener">CUPTI</a> 随同CUDA Toolkit一起安装</li>
+<li><a href="https://developer.nvidia.com/cudnn" target="_blank" rel="noopener">cuDNN SDK</a> (7.4)</li>
+</ul>
+<h5 id="配置系统环境变量"><a href="#配置系统环境变量" class="headerlink" title="配置系统环境变量"></a>配置系统环境变量</h5><p>将CUDA, CUPTI, 和 cuDNN加到系统变量%PATH%下。例如，如果CUDA Toolkit 被安装到 <code>C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0</code> 同时cuDNN被安装到 <code>C:\tools\cuda</code>，如下更新<code>%PATH%</code> 以便别的程序能找到他们：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">SET PATH=C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\bin;%PATH%</span><br><span class="line">SET PATH=C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\extras\CUPTI\libx64;%PATH%</span><br><span class="line">SET PATH=C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include;%PATH%</span><br><span class="line">SET PATH=C:\tools\cuda\bin;%PATH%</span><br></pre></td></tr></table></figure>
+<h4 id="4-TensorFlow-2-x-GPU支持-安装教程"><a href="#4-TensorFlow-2-x-GPU支持-安装教程" class="headerlink" title="4. TensorFlow 2.x  GPU支持 安装教程"></a>4. TensorFlow 2.x  GPU支持 安装教程</h4><h5 id="环境配置要求：-1"><a href="#环境配置要求：-1" class="headerlink" title="环境配置要求："></a>环境配置要求：</h5><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">CUDA==10.1</span><br><span class="line">cudnn==7.6</span><br><span class="line">tensorflow-gpu==2.1.0</span><br></pre></td></tr></table></figure>
+<p>更多版本之间的对应关系参考链接<a href="https://blog.csdn.net/qq_27825451/article/details/89082978" target="_blank" rel="noopener">https://blog.csdn.net/qq_27825451/article/details/89082978</a></p>
+<h5 id="安装TensorFlow-2-x-GPU"><a href="#安装TensorFlow-2-x-GPU" class="headerlink" title="安装TensorFlow 2.x GPU"></a>安装TensorFlow 2.x GPU</h5><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 开启venv_tf_2x虚拟Python环境</span></span><br><span class="line">./venv_tf_2x/Scripts/activate</span><br><span class="line"></span><br><span class="line"><span class="comment"># 安装TensorFlow最新版本</span></span><br><span class="line">pip install tensorflow  <span class="comment"># GPU</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 测试TensorFlow是否安装成功</span></span><br><span class="line">python -c <span class="string">"import tensorflow as tf;print(tf.reduce_sum(tf.random.normal([1000, 1000])))"</span></span><br><span class="line"><span class="comment"># 此处会显示是否采用了GPU的支持，即便GPU支持未开启，此处代码也可运行。若想获得GPU支持，请继续参考如下步骤。</span></span><br></pre></td></tr></table></figure>
+<h5 id="配置GPU环境支持-1"><a href="#配置GPU环境支持-1" class="headerlink" title="配置GPU环境支持"></a>配置GPU环境支持</h5><ul>
+<li><a href="https://www.nvidia.com/drivers" target="_blank" rel="noopener">NVIDIA® GPU drivers</a> —CUDA 10.1 requires 418.x or higher.</li>
+<li><a href="https://developer.nvidia.com/cuda-toolkit-archive" target="_blank" rel="noopener">CUDA® Toolkit</a> —TensorFlow supports CUDA 10.1 (TensorFlow &gt;= 2.1.0)</li>
+<li><a href="http://docs.nvidia.com/cuda/cupti/" target="_blank" rel="noopener">CUPTI</a> 随同CUDA Toolkit一起安装</li>
+<li><a href="https://developer.nvidia.com/cudnn" target="_blank" rel="noopener">cuDNN SDK</a> (7.6)</li>
+</ul>
+<h5 id="配置系统环境变量-1"><a href="#配置系统环境变量-1" class="headerlink" title="配置系统环境变量"></a>配置系统环境变量</h5><p>将CUDA, CUPTI, 和 cuDNN加到系统变量%PATH%下。例如，如果CUDA Toolkit 被安装到 <code>C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.1</code> 同时cuDNN被安装到 <code>C:\tools\cuda2</code>，如下更新<code>%PATH%</code> 以便别的程序能找到他们：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">SET PATH=C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.1\bin;%PATH%</span><br><span class="line">SET PATH=C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.1\extras\CUPTI\libx64;%PATH%</span><br><span class="line">SET PATH=C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.1\include;%PATH%</span><br><span class="line">SET PATH=C:\tools\cuda2\bin;%PATH%</span><br></pre></td></tr></table></figure>
+<p><strong>特别注意：两个版本的cuDNN和CUDA不要安装在同一路径，一面相互干扰。</strong></p>
+<h4 id="5-可选操作"><a href="#5-可选操作" class="headerlink" title="5. 可选操作"></a>5. 可选操作</h4><h5 id="更新所有的Python包"><a href="#更新所有的Python包" class="headerlink" title="更新所有的Python包"></a>更新所有的Python包</h5><p>可以将系统环境下的大部分Python包更新到最新，以保证大部分包与包之间是兼容的</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># pip-review方式：</span></span><br><span class="line">pip install pip-review</span><br><span class="line">pip-review --<span class="built_in">local</span> --interactive</span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 代码方式</span></span><br><span class="line"><span class="comment"># python3  pip10以上</span></span><br><span class="line"><span class="keyword">import</span> pip</span><br><span class="line"><span class="keyword">from</span> pip._internal.utils.misc <span class="keyword">import</span> get_installed_distributions</span><br><span class="line"><span class="keyword">from</span> subprocess <span class="keyword">import</span> call </span><br><span class="line"><span class="keyword">for</span> dist <span class="keyword">in</span> get_installed_distributions():</span><br><span class="line">    call(<span class="string">"pip install --upgrade "</span> + dist.project_name, shell=<span class="literal">True</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># pip 10以下</span></span><br><span class="line"><span class="keyword">import</span> pip</span><br><span class="line"><span class="keyword">from</span> subprocess <span class="keyword">import</span> call</span><br><span class="line"><span class="keyword">for</span> dist <span class="keyword">in</span> pip.get_installed_distributions():</span><br><span class="line">    call(<span class="string">"pip install --upgrade "</span> + dist.project_name, shell=<span class="literal">True</span>)</span><br></pre></td></tr></table></figure>
+<p>声明：本教程写于2020年3月8日，本教程内容只对该日安装过程负责。</p>
+<p>主要参考资料：</p>
+<p>[1] <a href="https://www.tensorflow.org/install/pip" target="_blank" rel="noopener">https://www.tensorflow.org/install/pip</a></p>
+<p>[2] <a href="https://www.tensorflow.org/install/gpu" target="_blank" rel="noopener">https://www.tensorflow.org/install/gpu</a></p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/05/11/GOT-and-PLT/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Lhy And Fyt">
+      <meta itemprop="description" content="This is a technique shareing blog.">
+      <meta itemprop="image" content="/uploads/20190320100718.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="L&F">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2019/05/11/GOT-and-PLT/" class="post-title-link" itemprop="url">GOT and PLT</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-05-11 15:32:21" itemprop="dateCreated datePublished" datetime="2019-05-11T15:32:21+08:00">2019-05-11</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2019-05-12 06:57:57" itemprop="dateModified" datetime="2019-05-12T06:57:57+08:00">2019-05-12</time>
+              
+            
+          </span>
+
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h4 id="写在前头"><a href="#写在前头" class="headerlink" title="写在前头"></a>写在前头</h4><p>​    首先, 我们要知道, GOT和PLT只是一种<code>重定向</code>的实现方式. 所以为了理解他们的作用, 就要先知道什么是重定向, 以及我们为什么需要重定向.</p>
+<p>​    <code>重定向(relocations)</code>, 简单来说就是二进制文件中留下的”坑”, 预留给外部变量或函数. 这里的变量和函数统称为<code>符号(symbols)</code>. 在编译期我们通常只知道外部符号的类型 (变量类型和函数原型), 而不需要知道具体的值(变量值和函数实现). 而这些预留的”坑”, 会在用到之前(链接期间或者运行期间)填上. 在链接期间填上主要通过工具链中的连接器, 比如GNU链接器<code>ld</code>; 在运行期间填上则通过动态连接器, 或者说解释器(interpreter)来实现.</p>
+<h4 id="符号表"><a href="#符号表" class="headerlink" title="符号表"></a>符号表</h4><p>函数和变量作为符号被存在可执行文件中, 不同类型的符号又聚合在一起, 称为<code>符号表</code>.<br> 有两种类型的符号表, 一种是常规的(.symtab和.strtab), 另一种是动态的(.dynsym和.dynstr),<br> 他们都在<a href="https://docs.oracle.com/cd/E19120-01/open.solaris/819-0690/6n33n7fda/index.html" target="_blank" rel="noopener">对应的section中</a>, 以main为例:</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">$ readelf -S ./main</span><br><span class="line">  [Nr] Name              Type            Addr     Off    Size   ES Flg Lk Inf Al</span><br><span class="line">  [ 5] .dynsym           DYNSYM          080481ec 0001ec 0000b0 10   A  6   1  4</span><br><span class="line">  [ 6] .dynstr           STRTAB          0804829c 00029c 000085 00   A  0   0  1</span><br><span class="line">...</span><br><span class="line">  [33] .symtab           SYMTAB          00000000 00120c 000490 10     34  52  4</span><br><span class="line">  [34] .strtab           STRTAB          00000000 00169c 0001e1 00      0   0  1</span><br></pre></td></tr></table></figure>
+<h4 id="GOT表和PLT表："><a href="#GOT表和PLT表：" class="headerlink" title="GOT表和PLT表："></a>GOT表和PLT表：</h4><p>GOT（Global Offset Table，全局偏移表）是Linux ELF文件中用于定位全局变量和函数的一个表。</p>
+<p>这是链接器在执行链接时 实际上要填充的部分, 保存了所有外部符号的地址信息。 不过值得注意的是，在i386架构下, 除了每个函数占用一个GOT表项外，GOT表项还保留了 3个公共表项, 每项<strong>32位(4字节)</strong>, 保存在前三个位置, 分别是:</p>
+<ul>
+<li>got[0]: 本ELF动态段(.dynamic段)的装载地址</li>
+<li>got[1]: 本ELF的<code>link_map</code>数据结构描述符地址</li>
+<li>got[2]: <code>_dl_runtime_resolve</code>函数的地址</li>
+</ul>
+<p>PLT（ProcedureLinkage Table，过程链接表）是Linux ELF文件中用于延迟绑定的表，即函数第一次被调用的时候才进行绑定。</p>
+<p>这个表里包含了一些代码，用来(1)调用链接器来解析某个外部函数的地址, 并填充到.got.plt中, 然后跳转到该函数；或者(2)直接在.got.plt中查找并跳转到对应外部函数(如果已经填充过)。</p>
+<h4 id="延迟绑定："><a href="#延迟绑定：" class="headerlink" title="延迟绑定："></a>延迟绑定：</h4><p>所谓延迟绑定，就是当函数第一次被调用的时候才进行绑定（包括符号查找、重定位等），如果函数从来没有用到过就不进行绑定。基于延迟绑定可以大大加快程序的启动速度，特别有利于一些引用了大量函数的程序。</p>
+<p>下面简单介绍一下延迟绑定的基本原理。假如存在一个bar函数，这个函数在PLT中的条目为bar@plt，在GOT中的条目为bar@got，那么在第一次调用bar函数的时候，首先会跳转到PLT，伪代码如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">bar@plt:</span><br><span class="line">jmp bar@got</span><br><span class="line">patch bar@got</span><br></pre></td></tr></table></figure>
+<p>这里会从PLT跳转到GOT，如果函数从来没有调用过，那么这时候GOT会跳转回PLT并调用patch bar@got，这一行代码的作用是将bar函数真正的地址填充到bar@got，然后跳转到bar函数真正的地址执行代码。当我们下次再调用bar函数的时候，执行路径就是先后跳转到bar@plt、bar@got、bar真正的地址。具体来看个实例：</p>
+<p>vulnerable_function函数调用了read函数，由于read函数是动态链接加载进来的只有在链接的时候才知道地址，编译时并不知道地址</p>
+<p>执行call _read函数会跳到plt表中寻找：</p>
+<p><img src="/2019/05/11/GOT-and-PLT/4484910-cc89e9b35db2643a.png" alt="4484910-cc89e9b35db2643a"></p>
+<p>plt表中会继续跳入到got表中寻找</p>
+<p><img src="/2019/05/11/GOT-and-PLT/4484910-36c8d9ecd0b0033f.png" alt="4484910-36c8d9ecd0b0033f"></p>
+<p>got表中的所存的read函数的地址便是在so.6进程中的实际地址</p>
+<p><img src="/2019/05/11/GOT-and-PLT/4484910-7e00f562ffefb5c1.png" alt="4484910-7e00f562ffefb5c1"></p>
+<p>也就是</p>
+<p><img src="/2019/05/11/GOT-and-PLT/4484910-72c5fc694475e1f8.png" alt="4484910-72c5fc694475e1f8"></p>
+<p>PLT-&gt;GOT调用过程：</p>
+<p><img src="/2019/05/11/GOT-and-PLT/图片1.png" alt="图片1"></p>
+<p><img src="/2019/05/11/GOT-and-PLT/图片2.png" alt="图片2"></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">Push n ;n是符号引用在重定位表中的下标。</span><br><span class="line">Push 0x80496f0；是模块的id</span><br><span class="line">Jmp *0x80496f4是_dl_runtime_resolve()函数地址，找到一个函数地址，必须知道是那个模块，哪个函数</span><br><span class="line">Got表前三项是.dynamic地址；本模块id;_dl_runtime_resolve()地址</span><br></pre></td></tr></table></figure>
+<p><img src="/2019/05/11/GOT-and-PLT/图片3.png" alt="图片3"></p>
+<h4 id="信息泄漏的实现"><a href="#信息泄漏的实现" class="headerlink" title="信息泄漏的实现"></a>信息泄漏的实现</h4><blockquote>
+<p>在进行缓冲区溢出攻击的时候，如果我们将EIP跳转到write函数执行，并且在栈上安排和write相关的参数，就可以泄漏指定内存地址上的内容。比如我们可以将某一个函数的GOT条目的地址传给write函数，就可以泄漏这个函数在进程空间中的真实地址。</p>
+<p>如果泄漏一个系统调用的内存地址，结合libc.so.6文件，我们就可以推算出其他系统调用（比如system）的地址。</p>
+</blockquote>
+<h4 id="ibc-so-6文件的作用"><a href="#ibc-so-6文件的作用" class="headerlink" title="ibc.so.6文件的作用"></a>ibc.so.6文件的作用</h4><blockquote>
+<p>在一些CTF的PWN题目中，经常可以看到题目除了提供ELF文件之外还提供了一个libc.so.6文件，那么这个额外提供的文件到底有什么用呢？</p>
+<p>如果我们可以利用目标程序的漏洞来泄漏某一个函数的地址，那么我们就可以计算出system函数的地址了，当然，被泄露地址的函数必须也定义在libc.so.6中（libc.so.6中通常也存在有/bin/bash或者/bin/sh这个字符串）。</p>
+<p>计算system函数地址的基本原理是，在libc.so.6中，各个函数的相对地址是固定的，比如函数A相对于libc.so.6的起始地址为addr_A，函数B相对于libc.so.6的起始地址为addr_B，那么，如果我们能够泄漏进程内存空间中函数A的地址address_A，那么函数B在进程空间中的地址就可以计算出来了，为address_A + addr_B - addr_A</p>
+</blockquote>
+<h4 id="相关知识："><a href="#相关知识：" class="headerlink" title="相关知识："></a>相关知识：</h4><h5 id="LEAh和offset的区别："><a href="#LEAh和offset的区别：" class="headerlink" title="LEAh和offset的区别："></a>LEAh和offset的区别：</h5><p> lea   是机器指令，offset   是伪指令。</p>
+<p> LEA  BX,  BUFFER  ;在实际执行时才会将变量buffer的地址放入bx </p>
+<p> MOV  BX, OFFSET BUFFER ;在编译时就已经计算出buffer的地址为4300(假设)，然后将上句替换为: mov bx,4300</p>
+<p> lea可以进行比较复杂的计算，比如lea   eax,[esi+ebx<em>4]，把ebx的值</em>4，加上esi的值，存入eax中。<br> mov就不行了。</p>
+<p> OFFSET只能取得用”数据定义伪指令”定义的变量的有效地址,不能取得一般操作数的有效地址(摘自80x86汇编语言程序设计教程)<br> MOV   BX,OFFSET   [BX+200]这句是错误的     应该用LEA   BX,[BX+200]</p>
+<p> lea   eax,[ebp]<br> 说明: eax得到ebp指向的堆栈内容的偏移地址， 和寄存器ebp的值是相同的</p>
+<h5 id="PIE相关"><a href="#PIE相关" class="headerlink" title="PIE相关"></a>PIE相关</h5><p>按照链接器的约定, 32位程序会加载到<code>0x08048000</code>这个地址中(<a href="http://www.iecc.com/linker/linker04.html" target="_blank" rel="noopener">为什么?</a>),<br> 所以我们写程序时, 可以以这个地址为基础, 对变量进行绝对地址寻址. 以main为例:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ readelf -S ./main | grep &quot;\.data&quot;</span><br><span class="line">  [Nr] Name              Type            Addr     Off    Size   ES Flg Lk Inf Al</span><br><span class="line">  [25] .data             PROGBITS        0804a014 001014 00000c 00  WA  0   0  4</span><br></pre></td></tr></table></figure>
+<p>.data部分在可执行文件中的偏移量为0x1014, 那么加载到虚拟内存中的地址应该是<br> 0x8048000+0x1014=0x804a14, 正好和显示的结果一样. 再看看main函数的汇编代码:</p>
+<p>（这里的0x08048000是虚拟地址）</p>
+<p>按绝对地址寻址, 对可执行文件来说不是什么大问题, 因为一个进程只有一个主函数.<br> 可对于动态链接库而言就比较麻烦, 如果每个.so文件都要求加载到某个绝对地址,<br> 那简直是个噩梦, 因为你无法保证不和别人的.so加载地址冲突. 所以就有了位置无关代码的概念.<br> 以位置无关的方式编译的<code>main_pi</code>, 来看看其相关信息:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ readelf -S ./main_pi | grep &quot;\.data&quot;</span><br><span class="line">  [Nr] Name              Type            Addr     Off    Size   ES Flg Lk Inf Al</span><br><span class="line">  [25] .data             PROGBITS        00002014 001014 00000c 00  WA  0   0  4</span><br></pre></td></tr></table></figure>
+<p>偏移量还是固定的, 但Addr部分不再是绝对地址. 也就是说程序可以加载到<strong>虚拟内存</strong>的任意位置.<br> 听起来很神奇? 其实实现很简单, 继续看看main()的汇编:</p>
+<p>（汇编指令长度是不固定的！不是定长16位、32位或者64位）</p>
+<h5 id="参考文献："><a href="#参考文献：" class="headerlink" title="参考文献："></a>参考文献：</h5><p><a href="http://blog.sina.com.cn/s/blog_54f82cc201011oqv.html" target="_blank" rel="noopener">http://blog.sina.com.cn/s/blog_54f82cc201011oqv.html</a></p>
+<p><a href="https://www.jianshu.com/p/0ac63c3744dd" target="_blank" rel="noopener">https://www.jianshu.com/p/0ac63c3744dd</a></p>
+<p><a href="https://www.cnblogs.com/pannengzhi/p/2018-04-09-about-got-plt.html" target="_blank" rel="noopener">https://www.cnblogs.com/pannengzhi/p/2018-04-09-about-got-plt.html</a></p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/05/08/ret2syscall/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -441,12 +845,24 @@
                 
               
 
-              <time title="创建时间：2019-05-08 21:10:36 / 修改时间：21:34:00" itemprop="dateCreated datePublished" datetime="2019-05-08T21:10:36+08:00">2019-05-08</time>
+              <time title="创建时间：2019-05-08 21:10:36" itemprop="dateCreated datePublished" datetime="2019-05-08T21:10:36+08:00">2019-05-08</time>
             
 
             
               
 
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2019-05-12 11:17:11" itemprop="dateModified" datetime="2019-05-12T11:17:11+08:00">2019-05-12</time>
               
             
           </span>
@@ -491,7 +907,7 @@
 <p>JUMP NEXT</p>
 <p>)</p>
 <p>子函数开辟堆栈空间：</p>
-<p>PUSH ESP </p>
+<p>PUSH EBP</p>
 <p>MOV EBP, ESP</p>
 <p>SUB ESP, 80H</p>
 <p>子函数清空栈空间并返回上级函数栈空间：</p>
@@ -1929,156 +2345,13 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/03/17/hello-world/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Lhy And Fyt">
-      <meta itemprop="description" content="This is a technique shareing blog.">
-      <meta itemprop="image" content="/uploads/20190320100718.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="L&F">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2019/03/17/hello-world/" class="post-title-link" itemprop="url">Hello World</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-
-              
-                
-              
-
-              <time title="创建时间：2019-03-17 10:00:36" itemprop="dateCreated datePublished" datetime="2019-03-17T10:00:36+08:00">2019-03-17</time>
-            
-
-            
-          </span>
-
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p>Welcome to <a href="https://hexo.io/" target="_blank" rel="noopener">Hexo</a>! This is your very first post. Check <a href="https://hexo.io/docs/" target="_blank" rel="noopener">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a href="https://hexo.io/docs/troubleshooting.html" target="_blank" rel="noopener">troubleshooting</a> or you can ask me on <a href="https://github.com/hexojs/hexo/issues" target="_blank" rel="noopener">GitHub</a>.</p>
-<h2 id="Quick-Start"><a href="#Quick-Start" class="headerlink" title="Quick Start"></a>Quick Start</h2><h3 id="Create-a-new-post"><a href="#Create-a-new-post" class="headerlink" title="Create a new post"></a>Create a new post</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo new <span class="string">"My New Post"</span></span><br></pre></td></tr></table></figure>
-<p>More info: <a href="https://hexo.io/docs/writing.html" target="_blank" rel="noopener">Writing</a></p>
-<h3 id="Run-server"><a href="#Run-server" class="headerlink" title="Run server"></a>Run server</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo server</span><br></pre></td></tr></table></figure>
-<p>More info: <a href="https://hexo.io/docs/server.html" target="_blank" rel="noopener">Server</a></p>
-<h3 id="Generate-static-files"><a href="#Generate-static-files" class="headerlink" title="Generate static files"></a>Generate static files</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo generate</span><br></pre></td></tr></table></figure>
-<p>More info: <a href="https://hexo.io/docs/generating.html" target="_blank" rel="noopener">Generating</a></p>
-<h3 id="Deploy-to-remote-sites"><a href="#Deploy-to-remote-sites" class="headerlink" title="Deploy to remote sites"></a>Deploy to remote sites</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo deploy</span><br></pre></td></tr></table></figure>
-<p>More info: <a href="https://hexo.io/docs/deployment.html" target="_blank" rel="noopener">Deployment</a></p>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
+  <nav class="pagination">
+    <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="extend next" rel="next" href="/page/2/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
+  </nav>
+
 
 
           </div>
@@ -2120,7 +2393,7 @@
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">9</span>
+                    <span class="site-state-item-count">11</span>
                     <span class="site-state-item-name">日志</span>
                   </a>
                 </div>
@@ -2153,7 +2426,13 @@
                     
                       
                     
-                    <span class="site-state-item-count">9</span>
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">12</span>
                     <span class="site-state-item-name">标签</span>
                   
                 </div>
@@ -2195,7 +2474,7 @@
 
     <footer id="footer" class="footer">
       <div class="footer-inner">
-        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
   <span class="with-love" id="animate">
     <i class="fa fa-user"></i>
   </span>

@@ -1,0 +1,921 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-CN">
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2">
+
+<link rel="stylesheet" href="/css/main.css?v=7.0.1">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=7.0.1">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=7.0.1">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=7.0.1">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=7.0.1" color="#222">
+
+
+
+
+
+
+
+<script id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '7.0.1',
+    sidebar: {"position":"left","display":"post","offset":12,"onmobile":false,"dimmer":false},
+    back2top: true,
+    back2top_sidebar: false,
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="1. 概述目前神经网络的编程框架仍然主要使用TensorFlow，尤其在TensorFlow2.0之后，使用TensorFlow框架编程可以像其他Python库一样直接编写。从个人使用角度讲，其优点包括但不限于：  隐化计算图构建过程，使得学习壁垒降低，对新手更加友好。 TensorFlow2.0的Keras API更加好用，可以实现一行一层神经网络，几行完成整个神经网络的设计。 梯度计算更加方便">
+<meta name="keywords" content="NN,TensorFlow">
+<meta property="og:type" content="article">
+<meta property="og:title" content="How to Install TensorFlow1.x and 2.x GPU Supported on Windows">
+<meta property="og:url" content="http://yoursite.com/2020/03/08/How-to-Install-TensorFlow1-x-and-2-x-GPU-Supported-on-Windows/index.html">
+<meta property="og:site_name" content="L&amp;F">
+<meta property="og:description" content="1. 概述目前神经网络的编程框架仍然主要使用TensorFlow，尤其在TensorFlow2.0之后，使用TensorFlow框架编程可以像其他Python库一样直接编写。从个人使用角度讲，其优点包括但不限于：  隐化计算图构建过程，使得学习壁垒降低，对新手更加友好。 TensorFlow2.0的Keras API更加好用，可以实现一行一层神经网络，几行完成整个神经网络的设计。 梯度计算更加方便">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2020-03-08T06:39:47.610Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="How to Install TensorFlow1.x and 2.x GPU Supported on Windows">
+<meta name="twitter:description" content="1. 概述目前神经网络的编程框架仍然主要使用TensorFlow，尤其在TensorFlow2.0之后，使用TensorFlow框架编程可以像其他Python库一样直接编写。从个人使用角度讲，其优点包括但不限于：  隐化计算图构建过程，使得学习壁垒降低，对新手更加友好。 TensorFlow2.0的Keras API更加好用，可以实现一行一层神经网络，几行完成整个神经网络的设计。 梯度计算更加方便">
+
+
+
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2020/03/08/How-to-Install-TensorFlow1-x-and-2-x-GPU-Supported-on-Windows/">
+
+
+
+<script id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>How to Install TensorFlow1.x and 2.x GPU Supported on Windows | L&F</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .motion-element,
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-title { opacity: initial; }
+
+  .use-motion .logo,
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">L&F</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+      
+        <p class="site-subtitle">Good Good Study Day Day Up.</p>
+      
+    
+    
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="切换导航栏">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-home">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-主页"></i> <br>首页</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-about">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/about/" rel="section"><i class="menu-item-icon fa fa-fw fa-关于页面"></i> <br>关于</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-tags">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/tags/" rel="section"><i class="menu-item-icon fa fa-fw fa-标签页"></i> <br>标签</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-categories">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/categories/" rel="section"><i class="menu-item-icon fa fa-fw fa-分类页"></i> <br>分类</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-archives">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-归档页"></i> <br>归档</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-schedule">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/schedule/" rel="section"><i class="menu-item-icon fa fa-fw fa-日历"></i> <br>日程表</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-sitemap">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/sitemap.xml" rel="section"><i class="menu-item-icon fa fa-fw fa-站点地图"></i> <br>站点地图</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-commonweal">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/404/" rel="section"><i class="menu-item-icon fa fa-fw fa-公益404"></i> <br>公益 404</a>
+
+  </li>
+
+      
+      
+    </ul>
+  
+
+  
+
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+            
+
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/03/08/How-to-Install-TensorFlow1-x-and-2-x-GPU-Supported-on-Windows/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Lhy And Fyt">
+      <meta itemprop="description" content="This is a technique shareing blog.">
+      <meta itemprop="image" content="/uploads/20190320100718.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="L&F">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">How to Install TensorFlow1.x and 2.x GPU Supported on Windows
+
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2020-03-08 14:38:10 / 修改时间：14:39:47" itemprop="dateCreated datePublished" datetime="2020-03-08T14:38:10+08:00">2020-03-08</time>
+            
+
+            
+              
+
+              
+            
+          </span>
+
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h4 id="1-概述"><a href="#1-概述" class="headerlink" title="1. 概述"></a>1. 概述</h4><p>目前神经网络的编程框架仍然主要使用TensorFlow，尤其在TensorFlow2.0之后，使用TensorFlow框架编程可以像其他Python库一样直接编写。从个人使用角度讲，其优点包括但不限于：</p>
+<ol>
+<li>隐化计算图构建过程，使得学习壁垒降低，对新手更加友好。</li>
+<li>TensorFlow2.0的Keras API更加好用，可以实现一行一层神经网络，几行完成整个神经网络的设计。</li>
+<li>梯度计算更加方便，只要设计好神经网络，选定输入和输出神经元，即可自动实现后向传播算法，以计算梯度。</li>
+</ol>
+<p>但是，目前主流的TensorFlow存在两个版本，并且两个版本的编程方式存在的不小的差异，为适应复现不用项目的需求，以及学习各种基于神经网络的项目，在本机系统上同时支持两个版本的TensorFlow是有必要的，本教程主要介绍如何在Windows上进行TensorFlow1.x和TensorFlow2.x的同时环境配置。</p>
+<p>需要说明的是，TensorFlow1.x是区分CPU版本和GPU版本的，而TensorFlow2.X是不区分的，如果有GPU并配置好了环境会自动搭载GPU运行程序。同时因为TensorFlow1.x的CPU版本较为简单，因此本教程只对TensorFlow1.x和进行TensorFlow2.x的GPU版本进行配置。</p>
+<h4 id="2-基础环境搭建"><a href="#2-基础环境搭建" class="headerlink" title="2.  基础环境搭建"></a>2.  基础环境搭建</h4><p>由于要对双版本的TensorFlow进行支持，这里推荐创建两个Python的虚拟环境（virtualenv）分别安装，并在使用时选择特定的虚拟环境下的Python执行任务。</p>
+<h5 id="查看本机是否安装了Python3、pip3、virtualenv。"><a href="#查看本机是否安装了Python3、pip3、virtualenv。" class="headerlink" title="查看本机是否安装了Python3、pip3、virtualenv。"></a>查看本机是否安装了Python3、pip3、virtualenv。</h5><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">python3 --version</span><br><span class="line">pip3 --version</span><br><span class="line">virtualenv --version</span><br></pre></td></tr></table></figure>
+<p>如果已经所需的环境包都已经安装，则继续安装Windows系统缺失的动态链接库环境。</p>
+<h5 id="包环境安装"><a href="#包环境安装" class="headerlink" title="包环境安装"></a>包环境安装</h5><ul>
+<li>如果未安装Python3，可以到官网下载并安装，同时pip3会随同Python3一起被安装：<a href="https://www.python.org/downloads/windows/" target="_blank" rel="noopener">Python 3 release for Windows</a></li>
+<li>如果未安装virtualenv，可以使用如下命令安装：pip3 install -U pip virtualenv</li>
+</ul>
+<h5 id="系统库环境安装"><a href="#系统库环境安装" class="headerlink" title="系统库环境安装"></a>系统库环境安装</h5><p>由于TensorFlow2.1.0之后需要Microsoft Visual C++关于<em>Visual Studio 2015, 2017, and 2019</em>的支持。对于未安装 <em>Visual Studio 2019</em>的用户需要另行安装此支持，以实现<code>msvcp140_1.dll</code>对TensorFlow2.1.0的支持。</p>
+<ul>
+<li>到 <a href="https://support.microsoft.com/en-us/help/2977003/the-latest-supported-visual-c-downloads/" target="_blank" rel="noopener">Microsoft Visual C++ downloads</a>选取适合自己系统的<em>Visual C++ 2015, 2017 and 2019</em>支持，例如<a href="https://aka.ms/vs/16/release/vc_redist.x64.exe" target="_blank" rel="noopener">vc_redist.x64.exe</a>。</li>
+<li>同时保证开启Windows下的长路径许可： <a href="https://superuser.com/questions/1119883/windows-10-enable-ntfs-long-paths-policy-option-missing" target="_blank" rel="noopener">long paths are enabled</a></li>
+</ul>
+<h5 id="建立虚拟环境并开启-关闭环境"><a href="#建立虚拟环境并开启-关闭环境" class="headerlink" title="建立虚拟环境并开启/关闭环境"></a>建立虚拟环境并开启/关闭环境</h5><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 跟新系统环境下的pip</span></span><br><span class="line">pip install --upgrade pip</span><br><span class="line"></span><br><span class="line"><span class="comment"># 为TensorFlow1.x GPU创建虚拟环境</span></span><br><span class="line">virtualenv --system-site-packages -p python3 ./venv_tf_1x_gpu</span><br><span class="line"><span class="comment"># 为TensorFlow2.x 创建虚拟环境</span></span><br><span class="line"><span class="comment"># virtualenv --system-site-packages -p python3 ./venv_tf_2x</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 启动虚拟环境</span></span><br><span class="line">./venv_tf_1x_gpu/Scripts/activate</span><br><span class="line"></span><br><span class="line"><span class="comment"># 展示该虚拟环境下的所有Python包</span></span><br><span class="line">pip list  <span class="comment"># show packages installed within the virtual environment</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 退出虚拟环境</span></span><br><span class="line">deactivate  <span class="comment"># don't exit until you're done using TensorFlow</span></span><br></pre></td></tr></table></figure>
+<h4 id="3-TensorFlow-1-x-GPU支持-安装教程"><a href="#3-TensorFlow-1-x-GPU支持-安装教程" class="headerlink" title="3. TensorFlow 1.x  GPU支持 安装教程"></a>3. TensorFlow 1.x  GPU支持 安装教程</h4><h5 id="环境配置要求："><a href="#环境配置要求：" class="headerlink" title="环境配置要求："></a>环境配置要求：</h5><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">scipy==1.2.1</span><br><span class="line">CUDA==10.0</span><br><span class="line">cudnn==7.4</span><br><span class="line">tensorflow-gpu==1.15</span><br></pre></td></tr></table></figure>
+<p>更多版本之间的对应关系参考链接<a href="https://blog.csdn.net/qq_27825451/article/details/89082978" target="_blank" rel="noopener">https://blog.csdn.net/qq_27825451/article/details/89082978</a></p>
+<h5 id="安装TensorFlow-1-x-GPU"><a href="#安装TensorFlow-1-x-GPU" class="headerlink" title="安装TensorFlow 1.x GPU"></a>安装TensorFlow 1.x GPU</h5><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 开启venv_tf_1x_gpu虚拟Python环境</span></span><br><span class="line">./venv_tf_1x_gpu/Scripts/activate</span><br><span class="line"></span><br><span class="line"><span class="comment"># 将scipy版本降级到1.2.1</span></span><br><span class="line">pip install scipy==1.2.1</span><br><span class="line"></span><br><span class="line"><span class="comment"># 安装TensorFlow1.5 GPU版本</span></span><br><span class="line">pip install tensorflow-gpu==1.15  <span class="comment"># GPU</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 测试TensorFlow是否安装成功</span></span><br><span class="line">python -c <span class="string">"import tensorflow as tf;print(tf.reduce_sum(tf.random.normal([1000, 1000])))"</span></span><br><span class="line"><span class="comment"># 此处会显示是否采用了GPU的支持，即便GPU支持未开启，此处代码也可运行。若想获得GPU支持，请继续参考如下步骤。</span></span><br></pre></td></tr></table></figure>
+<h5 id="配置GPU环境支持"><a href="#配置GPU环境支持" class="headerlink" title="配置GPU环境支持"></a>配置GPU环境支持</h5><ul>
+<li><a href="https://www.nvidia.com/drivers" target="_blank" rel="noopener">NVIDIA® GPU drivers</a> —CUDA 10.1 requires 418.x or higher.</li>
+<li><a href="https://developer.nvidia.com/cuda-toolkit-archive" target="_blank" rel="noopener">CUDA® Toolkit</a> —TensorFlow supports CUDA 10.0 (TensorFlow = 1.5)</li>
+<li><a href="http://docs.nvidia.com/cuda/cupti/" target="_blank" rel="noopener">CUPTI</a> 随同CUDA Toolkit一起安装</li>
+<li><a href="https://developer.nvidia.com/cudnn" target="_blank" rel="noopener">cuDNN SDK</a> (7.4)</li>
+</ul>
+<h5 id="配置系统环境变量"><a href="#配置系统环境变量" class="headerlink" title="配置系统环境变量"></a>配置系统环境变量</h5><p>将CUDA, CUPTI, 和 cuDNN加到系统变量%PATH%下。例如，如果CUDA Toolkit 被安装到 <code>C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0</code> 同时cuDNN被安装到 <code>C:\tools\cuda</code>，如下更新<code>%PATH%</code> 以便别的程序能找到他们：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">SET PATH=C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\bin;%PATH%</span><br><span class="line">SET PATH=C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\extras\CUPTI\libx64;%PATH%</span><br><span class="line">SET PATH=C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\include;%PATH%</span><br><span class="line">SET PATH=C:\tools\cuda\bin;%PATH%</span><br></pre></td></tr></table></figure>
+<h4 id="4-TensorFlow-2-x-GPU支持-安装教程"><a href="#4-TensorFlow-2-x-GPU支持-安装教程" class="headerlink" title="4. TensorFlow 2.x  GPU支持 安装教程"></a>4. TensorFlow 2.x  GPU支持 安装教程</h4><h5 id="环境配置要求：-1"><a href="#环境配置要求：-1" class="headerlink" title="环境配置要求："></a>环境配置要求：</h5><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">CUDA==10.1</span><br><span class="line">cudnn==7.6</span><br><span class="line">tensorflow-gpu==2.1.0</span><br></pre></td></tr></table></figure>
+<p>更多版本之间的对应关系参考链接<a href="https://blog.csdn.net/qq_27825451/article/details/89082978" target="_blank" rel="noopener">https://blog.csdn.net/qq_27825451/article/details/89082978</a></p>
+<h5 id="安装TensorFlow-2-x-GPU"><a href="#安装TensorFlow-2-x-GPU" class="headerlink" title="安装TensorFlow 2.x GPU"></a>安装TensorFlow 2.x GPU</h5><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 开启venv_tf_2x虚拟Python环境</span></span><br><span class="line">./venv_tf_2x/Scripts/activate</span><br><span class="line"></span><br><span class="line"><span class="comment"># 安装TensorFlow最新版本</span></span><br><span class="line">pip install tensorflow  <span class="comment"># GPU</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 测试TensorFlow是否安装成功</span></span><br><span class="line">python -c <span class="string">"import tensorflow as tf;print(tf.reduce_sum(tf.random.normal([1000, 1000])))"</span></span><br><span class="line"><span class="comment"># 此处会显示是否采用了GPU的支持，即便GPU支持未开启，此处代码也可运行。若想获得GPU支持，请继续参考如下步骤。</span></span><br></pre></td></tr></table></figure>
+<h5 id="配置GPU环境支持-1"><a href="#配置GPU环境支持-1" class="headerlink" title="配置GPU环境支持"></a>配置GPU环境支持</h5><ul>
+<li><a href="https://www.nvidia.com/drivers" target="_blank" rel="noopener">NVIDIA® GPU drivers</a> —CUDA 10.1 requires 418.x or higher.</li>
+<li><a href="https://developer.nvidia.com/cuda-toolkit-archive" target="_blank" rel="noopener">CUDA® Toolkit</a> —TensorFlow supports CUDA 10.1 (TensorFlow &gt;= 2.1.0)</li>
+<li><a href="http://docs.nvidia.com/cuda/cupti/" target="_blank" rel="noopener">CUPTI</a> 随同CUDA Toolkit一起安装</li>
+<li><a href="https://developer.nvidia.com/cudnn" target="_blank" rel="noopener">cuDNN SDK</a> (7.6)</li>
+</ul>
+<h5 id="配置系统环境变量-1"><a href="#配置系统环境变量-1" class="headerlink" title="配置系统环境变量"></a>配置系统环境变量</h5><p>将CUDA, CUPTI, 和 cuDNN加到系统变量%PATH%下。例如，如果CUDA Toolkit 被安装到 <code>C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.1</code> 同时cuDNN被安装到 <code>C:\tools\cuda2</code>，如下更新<code>%PATH%</code> 以便别的程序能找到他们：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">SET PATH=C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.1\bin;%PATH%</span><br><span class="line">SET PATH=C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.1\extras\CUPTI\libx64;%PATH%</span><br><span class="line">SET PATH=C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.1\include;%PATH%</span><br><span class="line">SET PATH=C:\tools\cuda2\bin;%PATH%</span><br></pre></td></tr></table></figure>
+<p><strong>特别注意：两个版本的cuDNN和CUDA不要安装在同一路径，一面相互干扰。</strong></p>
+<h4 id="5-可选操作"><a href="#5-可选操作" class="headerlink" title="5. 可选操作"></a>5. 可选操作</h4><h5 id="更新所有的Python包"><a href="#更新所有的Python包" class="headerlink" title="更新所有的Python包"></a>更新所有的Python包</h5><p>可以将系统环境下的大部分Python包更新到最新，以保证大部分包与包之间是兼容的</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># pip-review方式：</span></span><br><span class="line">pip install pip-review</span><br><span class="line">pip-review --<span class="built_in">local</span> --interactive</span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 代码方式</span></span><br><span class="line"><span class="comment"># python3  pip10以上</span></span><br><span class="line"><span class="keyword">import</span> pip</span><br><span class="line"><span class="keyword">from</span> pip._internal.utils.misc <span class="keyword">import</span> get_installed_distributions</span><br><span class="line"><span class="keyword">from</span> subprocess <span class="keyword">import</span> call </span><br><span class="line"><span class="keyword">for</span> dist <span class="keyword">in</span> get_installed_distributions():</span><br><span class="line">    call(<span class="string">"pip install --upgrade "</span> + dist.project_name, shell=<span class="literal">True</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># pip 10以下</span></span><br><span class="line"><span class="keyword">import</span> pip</span><br><span class="line"><span class="keyword">from</span> subprocess <span class="keyword">import</span> call</span><br><span class="line"><span class="keyword">for</span> dist <span class="keyword">in</span> pip.get_installed_distributions():</span><br><span class="line">    call(<span class="string">"pip install --upgrade "</span> + dist.project_name, shell=<span class="literal">True</span>)</span><br></pre></td></tr></table></figure>
+<p>声明：本教程写于2020年3月8日，本教程内容只对该日安装过程负责。</p>
+<p>主要参考资料：</p>
+<p>[1] <a href="https://www.tensorflow.org/install/pip" target="_blank" rel="noopener">https://www.tensorflow.org/install/pip</a></p>
+<p>[2] <a href="https://www.tensorflow.org/install/gpu" target="_blank" rel="noopener">https://www.tensorflow.org/install/gpu</a></p>
+
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/NN/" rel="tag"># NN</a>
+          
+            <a href="/tags/TensorFlow/" rel="tag"># TensorFlow</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/05/11/GOT-and-PLT/" rel="next" title="GOT and PLT">
+                <i class="fa fa-chevron-left"></i> GOT and PLT
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+  </div>
+
+
+          </div>
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="/uploads/20190320100718.jpg" alt="Lhy And Fyt">
+            
+              <p class="site-author-name" itemprop="name">Lhy And Fyt</p>
+              <div class="site-description motion-element" itemprop="description">This is a technique shareing blog.</div>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">11</span>
+                    <span class="site-state-item-name">日志</span>
+                  </a>
+                </div>
+              
+
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">12</span>
+                    <span class="site-state-item-name">标签</span>
+                  
+                </div>
+              
+            </nav>
+          
+
+          
+
+          
+
+          
+
+          
+
+          
+          
+
+          
+            
+          
+          
+
+        </div>
+      </div>
+
+      
+      <!--noindex-->
+        <div class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+            
+            
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#1-概述"><span class="nav-number">1.</span> <span class="nav-text">1. 概述</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-基础环境搭建"><span class="nav-number">2.</span> <span class="nav-text">2.  基础环境搭建</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#查看本机是否安装了Python3、pip3、virtualenv。"><span class="nav-number">2.1.</span> <span class="nav-text">查看本机是否安装了Python3、pip3、virtualenv。</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#包环境安装"><span class="nav-number">2.2.</span> <span class="nav-text">包环境安装</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#系统库环境安装"><span class="nav-number">2.3.</span> <span class="nav-text">系统库环境安装</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#建立虚拟环境并开启-关闭环境"><span class="nav-number">2.4.</span> <span class="nav-text">建立虚拟环境并开启/关闭环境</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-TensorFlow-1-x-GPU支持-安装教程"><span class="nav-number">3.</span> <span class="nav-text">3. TensorFlow 1.x  GPU支持 安装教程</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#环境配置要求："><span class="nav-number">3.1.</span> <span class="nav-text">环境配置要求：</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#安装TensorFlow-1-x-GPU"><span class="nav-number">3.2.</span> <span class="nav-text">安装TensorFlow 1.x GPU</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#配置GPU环境支持"><span class="nav-number">3.3.</span> <span class="nav-text">配置GPU环境支持</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#配置系统环境变量"><span class="nav-number">3.4.</span> <span class="nav-text">配置系统环境变量</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#4-TensorFlow-2-x-GPU支持-安装教程"><span class="nav-number">4.</span> <span class="nav-text">4. TensorFlow 2.x  GPU支持 安装教程</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#环境配置要求：-1"><span class="nav-number">4.1.</span> <span class="nav-text">环境配置要求：</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#安装TensorFlow-2-x-GPU"><span class="nav-number">4.2.</span> <span class="nav-text">安装TensorFlow 2.x GPU</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#配置GPU环境支持-1"><span class="nav-number">4.3.</span> <span class="nav-text">配置GPU环境支持</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#配置系统环境变量-1"><span class="nav-number">4.4.</span> <span class="nav-text">配置系统环境变量</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#5-可选操作"><span class="nav-number">5.</span> <span class="nav-text">5. 可选操作</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#更新所有的Python包"><span class="nav-number">5.1.</span> <span class="nav-text">更新所有的Python包</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </div>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+  
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Lhy And Fyt</span>
+
+  
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v3.8.0</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 – <a href="https://theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> v7.0.1</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+    
+
+    
+  </div>
+
+  
+
+<script>
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+
+  
+
+
+  <script src="/js/src/utils.js?v=7.0.1"></script>
+
+  <script src="/js/src/motion.js?v=7.0.1"></script>
+
+
+
+  
+  
+
+
+  <script src="/js/src/affix.js?v=7.0.1"></script>
+
+  <script src="/js/src/schemes/pisces.js?v=7.0.1"></script>
+
+
+
+
+  
+  <script src="/js/src/scrollspy.js?v=7.0.1"></script>
+<script src="/js/src/post-details.js?v=7.0.1"></script>
+
+
+
+  
+
+
+  <script src="/js/src/next-boot.js?v=7.0.1"></script>
+
+
+  
+
+  
+
+  
+
+  
+
+
+  
+
+
+  
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

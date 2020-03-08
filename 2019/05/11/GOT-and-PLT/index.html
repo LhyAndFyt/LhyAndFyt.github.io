@@ -1,0 +1,949 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-CN">
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2">
+
+<link rel="stylesheet" href="/css/main.css?v=7.0.1">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=7.0.1">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=7.0.1">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=7.0.1">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=7.0.1" color="#222">
+
+
+
+
+
+
+
+<script id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '7.0.1',
+    sidebar: {"position":"left","display":"post","offset":12,"onmobile":false,"dimmer":false},
+    back2top: true,
+    back2top_sidebar: false,
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="写在前头​    首先, 我们要知道, GOT和PLT只是一种重定向的实现方式. 所以为了理解他们的作用, 就要先知道什么是重定向, 以及我们为什么需要重定向. ​    重定向(relocations), 简单来说就是二进制文件中留下的”坑”, 预留给外部变量或函数. 这里的变量和函数统称为符号(symbols). 在编译期我们通常只知道外部符号的类型 (变量类型和函数原型), 而不需要知道具体">
+<meta name="keywords" content="pwn">
+<meta property="og:type" content="article">
+<meta property="og:title" content="GOT and PLT">
+<meta property="og:url" content="http://yoursite.com/2019/05/11/GOT-and-PLT/index.html">
+<meta property="og:site_name" content="L&amp;F">
+<meta property="og:description" content="写在前头​    首先, 我们要知道, GOT和PLT只是一种重定向的实现方式. 所以为了理解他们的作用, 就要先知道什么是重定向, 以及我们为什么需要重定向. ​    重定向(relocations), 简单来说就是二进制文件中留下的”坑”, 预留给外部变量或函数. 这里的变量和函数统称为符号(symbols). 在编译期我们通常只知道外部符号的类型 (变量类型和函数原型), 而不需要知道具体">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="http://yoursite.com/2019/05/11/GOT-and-PLT/4484910-cc89e9b35db2643a.png">
+<meta property="og:image" content="http://yoursite.com/2019/05/11/GOT-and-PLT/4484910-36c8d9ecd0b0033f.png">
+<meta property="og:image" content="http://yoursite.com/2019/05/11/GOT-and-PLT/4484910-7e00f562ffefb5c1.png">
+<meta property="og:image" content="http://yoursite.com/2019/05/11/GOT-and-PLT/4484910-72c5fc694475e1f8.png">
+<meta property="og:image" content="http://yoursite.com/2019/05/11/GOT-and-PLT/图片1.png">
+<meta property="og:image" content="http://yoursite.com/2019/05/11/GOT-and-PLT/图片2.png">
+<meta property="og:image" content="http://yoursite.com/2019/05/11/GOT-and-PLT/图片3.png">
+<meta property="og:updated_time" content="2019-05-11T22:57:57.767Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="GOT and PLT">
+<meta name="twitter:description" content="写在前头​    首先, 我们要知道, GOT和PLT只是一种重定向的实现方式. 所以为了理解他们的作用, 就要先知道什么是重定向, 以及我们为什么需要重定向. ​    重定向(relocations), 简单来说就是二进制文件中留下的”坑”, 预留给外部变量或函数. 这里的变量和函数统称为符号(symbols). 在编译期我们通常只知道外部符号的类型 (变量类型和函数原型), 而不需要知道具体">
+<meta name="twitter:image" content="http://yoursite.com/2019/05/11/GOT-and-PLT/4484910-cc89e9b35db2643a.png">
+
+
+
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2019/05/11/GOT-and-PLT/">
+
+
+
+<script id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>GOT and PLT | L&F</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .motion-element,
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-title { opacity: initial; }
+
+  .use-motion .logo,
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">L&F</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+      
+        <p class="site-subtitle">Good Good Study Day Day Up.</p>
+      
+    
+    
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="切换导航栏">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-home">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-主页"></i> <br>首页</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-about">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/about/" rel="section"><i class="menu-item-icon fa fa-fw fa-关于页面"></i> <br>关于</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-tags">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/tags/" rel="section"><i class="menu-item-icon fa fa-fw fa-标签页"></i> <br>标签</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-categories">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/categories/" rel="section"><i class="menu-item-icon fa fa-fw fa-分类页"></i> <br>分类</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-archives">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-归档页"></i> <br>归档</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-schedule">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/schedule/" rel="section"><i class="menu-item-icon fa fa-fw fa-日历"></i> <br>日程表</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-sitemap">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/sitemap.xml" rel="section"><i class="menu-item-icon fa fa-fw fa-站点地图"></i> <br>站点地图</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-commonweal">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/404/" rel="section"><i class="menu-item-icon fa fa-fw fa-公益404"></i> <br>公益 404</a>
+
+  </li>
+
+      
+      
+    </ul>
+  
+
+  
+
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+            
+
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/05/11/GOT-and-PLT/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Lhy And Fyt">
+      <meta itemprop="description" content="This is a technique shareing blog.">
+      <meta itemprop="image" content="/uploads/20190320100718.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="L&F">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">GOT and PLT
+
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-05-11 15:32:21" itemprop="dateCreated datePublished" datetime="2019-05-11T15:32:21+08:00">2019-05-11</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2019-05-12 06:57:57" itemprop="dateModified" datetime="2019-05-12T06:57:57+08:00">2019-05-12</time>
+              
+            
+          </span>
+
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h4 id="写在前头"><a href="#写在前头" class="headerlink" title="写在前头"></a>写在前头</h4><p>​    首先, 我们要知道, GOT和PLT只是一种<code>重定向</code>的实现方式. 所以为了理解他们的作用, 就要先知道什么是重定向, 以及我们为什么需要重定向.</p>
+<p>​    <code>重定向(relocations)</code>, 简单来说就是二进制文件中留下的”坑”, 预留给外部变量或函数. 这里的变量和函数统称为<code>符号(symbols)</code>. 在编译期我们通常只知道外部符号的类型 (变量类型和函数原型), 而不需要知道具体的值(变量值和函数实现). 而这些预留的”坑”, 会在用到之前(链接期间或者运行期间)填上. 在链接期间填上主要通过工具链中的连接器, 比如GNU链接器<code>ld</code>; 在运行期间填上则通过动态连接器, 或者说解释器(interpreter)来实现.</p>
+<h4 id="符号表"><a href="#符号表" class="headerlink" title="符号表"></a>符号表</h4><p>函数和变量作为符号被存在可执行文件中, 不同类型的符号又聚合在一起, 称为<code>符号表</code>.<br> 有两种类型的符号表, 一种是常规的(.symtab和.strtab), 另一种是动态的(.dynsym和.dynstr),<br> 他们都在<a href="https://docs.oracle.com/cd/E19120-01/open.solaris/819-0690/6n33n7fda/index.html" target="_blank" rel="noopener">对应的section中</a>, 以main为例:</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">$ readelf -S ./main</span><br><span class="line">  [Nr] Name              Type            Addr     Off    Size   ES Flg Lk Inf Al</span><br><span class="line">  [ 5] .dynsym           DYNSYM          080481ec 0001ec 0000b0 10   A  6   1  4</span><br><span class="line">  [ 6] .dynstr           STRTAB          0804829c 00029c 000085 00   A  0   0  1</span><br><span class="line">...</span><br><span class="line">  [33] .symtab           SYMTAB          00000000 00120c 000490 10     34  52  4</span><br><span class="line">  [34] .strtab           STRTAB          00000000 00169c 0001e1 00      0   0  1</span><br></pre></td></tr></table></figure>
+<h4 id="GOT表和PLT表："><a href="#GOT表和PLT表：" class="headerlink" title="GOT表和PLT表："></a>GOT表和PLT表：</h4><p>GOT（Global Offset Table，全局偏移表）是Linux ELF文件中用于定位全局变量和函数的一个表。</p>
+<p>这是链接器在执行链接时 实际上要填充的部分, 保存了所有外部符号的地址信息。 不过值得注意的是，在i386架构下, 除了每个函数占用一个GOT表项外，GOT表项还保留了 3个公共表项, 每项<strong>32位(4字节)</strong>, 保存在前三个位置, 分别是:</p>
+<ul>
+<li>got[0]: 本ELF动态段(.dynamic段)的装载地址</li>
+<li>got[1]: 本ELF的<code>link_map</code>数据结构描述符地址</li>
+<li>got[2]: <code>_dl_runtime_resolve</code>函数的地址</li>
+</ul>
+<p>PLT（ProcedureLinkage Table，过程链接表）是Linux ELF文件中用于延迟绑定的表，即函数第一次被调用的时候才进行绑定。</p>
+<p>这个表里包含了一些代码，用来(1)调用链接器来解析某个外部函数的地址, 并填充到.got.plt中, 然后跳转到该函数；或者(2)直接在.got.plt中查找并跳转到对应外部函数(如果已经填充过)。</p>
+<h4 id="延迟绑定："><a href="#延迟绑定：" class="headerlink" title="延迟绑定："></a>延迟绑定：</h4><p>所谓延迟绑定，就是当函数第一次被调用的时候才进行绑定（包括符号查找、重定位等），如果函数从来没有用到过就不进行绑定。基于延迟绑定可以大大加快程序的启动速度，特别有利于一些引用了大量函数的程序。</p>
+<p>下面简单介绍一下延迟绑定的基本原理。假如存在一个bar函数，这个函数在PLT中的条目为bar@plt，在GOT中的条目为bar@got，那么在第一次调用bar函数的时候，首先会跳转到PLT，伪代码如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">bar@plt:</span><br><span class="line">jmp bar@got</span><br><span class="line">patch bar@got</span><br></pre></td></tr></table></figure>
+<p>这里会从PLT跳转到GOT，如果函数从来没有调用过，那么这时候GOT会跳转回PLT并调用patch bar@got，这一行代码的作用是将bar函数真正的地址填充到bar@got，然后跳转到bar函数真正的地址执行代码。当我们下次再调用bar函数的时候，执行路径就是先后跳转到bar@plt、bar@got、bar真正的地址。具体来看个实例：</p>
+<p>vulnerable_function函数调用了read函数，由于read函数是动态链接加载进来的只有在链接的时候才知道地址，编译时并不知道地址</p>
+<p>执行call _read函数会跳到plt表中寻找：</p>
+<p><img src="/2019/05/11/GOT-and-PLT/4484910-cc89e9b35db2643a.png" alt="4484910-cc89e9b35db2643a"></p>
+<p>plt表中会继续跳入到got表中寻找</p>
+<p><img src="/2019/05/11/GOT-and-PLT/4484910-36c8d9ecd0b0033f.png" alt="4484910-36c8d9ecd0b0033f"></p>
+<p>got表中的所存的read函数的地址便是在so.6进程中的实际地址</p>
+<p><img src="/2019/05/11/GOT-and-PLT/4484910-7e00f562ffefb5c1.png" alt="4484910-7e00f562ffefb5c1"></p>
+<p>也就是</p>
+<p><img src="/2019/05/11/GOT-and-PLT/4484910-72c5fc694475e1f8.png" alt="4484910-72c5fc694475e1f8"></p>
+<p>PLT-&gt;GOT调用过程：</p>
+<p><img src="/2019/05/11/GOT-and-PLT/图片1.png" alt="图片1"></p>
+<p><img src="/2019/05/11/GOT-and-PLT/图片2.png" alt="图片2"></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">Push n ;n是符号引用在重定位表中的下标。</span><br><span class="line">Push 0x80496f0；是模块的id</span><br><span class="line">Jmp *0x80496f4是_dl_runtime_resolve()函数地址，找到一个函数地址，必须知道是那个模块，哪个函数</span><br><span class="line">Got表前三项是.dynamic地址；本模块id;_dl_runtime_resolve()地址</span><br></pre></td></tr></table></figure>
+<p><img src="/2019/05/11/GOT-and-PLT/图片3.png" alt="图片3"></p>
+<h4 id="信息泄漏的实现"><a href="#信息泄漏的实现" class="headerlink" title="信息泄漏的实现"></a>信息泄漏的实现</h4><blockquote>
+<p>在进行缓冲区溢出攻击的时候，如果我们将EIP跳转到write函数执行，并且在栈上安排和write相关的参数，就可以泄漏指定内存地址上的内容。比如我们可以将某一个函数的GOT条目的地址传给write函数，就可以泄漏这个函数在进程空间中的真实地址。</p>
+<p>如果泄漏一个系统调用的内存地址，结合libc.so.6文件，我们就可以推算出其他系统调用（比如system）的地址。</p>
+</blockquote>
+<h4 id="ibc-so-6文件的作用"><a href="#ibc-so-6文件的作用" class="headerlink" title="ibc.so.6文件的作用"></a>ibc.so.6文件的作用</h4><blockquote>
+<p>在一些CTF的PWN题目中，经常可以看到题目除了提供ELF文件之外还提供了一个libc.so.6文件，那么这个额外提供的文件到底有什么用呢？</p>
+<p>如果我们可以利用目标程序的漏洞来泄漏某一个函数的地址，那么我们就可以计算出system函数的地址了，当然，被泄露地址的函数必须也定义在libc.so.6中（libc.so.6中通常也存在有/bin/bash或者/bin/sh这个字符串）。</p>
+<p>计算system函数地址的基本原理是，在libc.so.6中，各个函数的相对地址是固定的，比如函数A相对于libc.so.6的起始地址为addr_A，函数B相对于libc.so.6的起始地址为addr_B，那么，如果我们能够泄漏进程内存空间中函数A的地址address_A，那么函数B在进程空间中的地址就可以计算出来了，为address_A + addr_B - addr_A</p>
+</blockquote>
+<h4 id="相关知识："><a href="#相关知识：" class="headerlink" title="相关知识："></a>相关知识：</h4><h5 id="LEAh和offset的区别："><a href="#LEAh和offset的区别：" class="headerlink" title="LEAh和offset的区别："></a>LEAh和offset的区别：</h5><p> lea   是机器指令，offset   是伪指令。</p>
+<p> LEA  BX,  BUFFER  ;在实际执行时才会将变量buffer的地址放入bx </p>
+<p> MOV  BX, OFFSET BUFFER ;在编译时就已经计算出buffer的地址为4300(假设)，然后将上句替换为: mov bx,4300</p>
+<p> lea可以进行比较复杂的计算，比如lea   eax,[esi+ebx<em>4]，把ebx的值</em>4，加上esi的值，存入eax中。<br> mov就不行了。</p>
+<p> OFFSET只能取得用”数据定义伪指令”定义的变量的有效地址,不能取得一般操作数的有效地址(摘自80x86汇编语言程序设计教程)<br> MOV   BX,OFFSET   [BX+200]这句是错误的     应该用LEA   BX,[BX+200]</p>
+<p> lea   eax,[ebp]<br> 说明: eax得到ebp指向的堆栈内容的偏移地址， 和寄存器ebp的值是相同的</p>
+<h5 id="PIE相关"><a href="#PIE相关" class="headerlink" title="PIE相关"></a>PIE相关</h5><p>按照链接器的约定, 32位程序会加载到<code>0x08048000</code>这个地址中(<a href="http://www.iecc.com/linker/linker04.html" target="_blank" rel="noopener">为什么?</a>),<br> 所以我们写程序时, 可以以这个地址为基础, 对变量进行绝对地址寻址. 以main为例:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ readelf -S ./main | grep &quot;\.data&quot;</span><br><span class="line">  [Nr] Name              Type            Addr     Off    Size   ES Flg Lk Inf Al</span><br><span class="line">  [25] .data             PROGBITS        0804a014 001014 00000c 00  WA  0   0  4</span><br></pre></td></tr></table></figure>
+<p>.data部分在可执行文件中的偏移量为0x1014, 那么加载到虚拟内存中的地址应该是<br> 0x8048000+0x1014=0x804a14, 正好和显示的结果一样. 再看看main函数的汇编代码:</p>
+<p>（这里的0x08048000是虚拟地址）</p>
+<p>按绝对地址寻址, 对可执行文件来说不是什么大问题, 因为一个进程只有一个主函数.<br> 可对于动态链接库而言就比较麻烦, 如果每个.so文件都要求加载到某个绝对地址,<br> 那简直是个噩梦, 因为你无法保证不和别人的.so加载地址冲突. 所以就有了位置无关代码的概念.<br> 以位置无关的方式编译的<code>main_pi</code>, 来看看其相关信息:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ readelf -S ./main_pi | grep &quot;\.data&quot;</span><br><span class="line">  [Nr] Name              Type            Addr     Off    Size   ES Flg Lk Inf Al</span><br><span class="line">  [25] .data             PROGBITS        00002014 001014 00000c 00  WA  0   0  4</span><br></pre></td></tr></table></figure>
+<p>偏移量还是固定的, 但Addr部分不再是绝对地址. 也就是说程序可以加载到<strong>虚拟内存</strong>的任意位置.<br> 听起来很神奇? 其实实现很简单, 继续看看main()的汇编:</p>
+<p>（汇编指令长度是不固定的！不是定长16位、32位或者64位）</p>
+<h5 id="参考文献："><a href="#参考文献：" class="headerlink" title="参考文献："></a>参考文献：</h5><p><a href="http://blog.sina.com.cn/s/blog_54f82cc201011oqv.html" target="_blank" rel="noopener">http://blog.sina.com.cn/s/blog_54f82cc201011oqv.html</a></p>
+<p><a href="https://www.jianshu.com/p/0ac63c3744dd" target="_blank" rel="noopener">https://www.jianshu.com/p/0ac63c3744dd</a></p>
+<p><a href="https://www.cnblogs.com/pannengzhi/p/2018-04-09-about-got-plt.html" target="_blank" rel="noopener">https://www.cnblogs.com/pannengzhi/p/2018-04-09-about-got-plt.html</a></p>
+
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/pwn/" rel="tag"># pwn</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/05/08/ret2syscall/" rel="next" title="ret2syscall">
+                <i class="fa fa-chevron-left"></i> ret2syscall
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2020/03/08/How-to-Install-TensorFlow1-x-and-2-x-GPU-Supported-on-Windows/" rel="prev" title="How to Install TensorFlow1.x and 2.x GPU Supported on Windows">
+                How to Install TensorFlow1.x and 2.x GPU Supported on Windows <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+  </div>
+
+
+          </div>
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="/uploads/20190320100718.jpg" alt="Lhy And Fyt">
+            
+              <p class="site-author-name" itemprop="name">Lhy And Fyt</p>
+              <div class="site-description motion-element" itemprop="description">This is a technique shareing blog.</div>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">11</span>
+                    <span class="site-state-item-name">日志</span>
+                  </a>
+                </div>
+              
+
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">12</span>
+                    <span class="site-state-item-name">标签</span>
+                  
+                </div>
+              
+            </nav>
+          
+
+          
+
+          
+
+          
+
+          
+
+          
+          
+
+          
+            
+          
+          
+
+        </div>
+      </div>
+
+      
+      <!--noindex-->
+        <div class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+            
+            
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#写在前头"><span class="nav-number">1.</span> <span class="nav-text">写在前头</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#符号表"><span class="nav-number">2.</span> <span class="nav-text">符号表</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#GOT表和PLT表："><span class="nav-number">3.</span> <span class="nav-text">GOT表和PLT表：</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#延迟绑定："><span class="nav-number">4.</span> <span class="nav-text">延迟绑定：</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#信息泄漏的实现"><span class="nav-number">5.</span> <span class="nav-text">信息泄漏的实现</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#ibc-so-6文件的作用"><span class="nav-number">6.</span> <span class="nav-text">ibc.so.6文件的作用</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#相关知识："><span class="nav-number">7.</span> <span class="nav-text">相关知识：</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#LEAh和offset的区别："><span class="nav-number">7.1.</span> <span class="nav-text">LEAh和offset的区别：</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#PIE相关"><span class="nav-number">7.2.</span> <span class="nav-text">PIE相关</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#参考文献："><span class="nav-number">7.3.</span> <span class="nav-text">参考文献：</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </div>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+  
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Lhy And Fyt</span>
+
+  
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v3.8.0</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 – <a href="https://theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> v7.0.1</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+    
+
+    
+  </div>
+
+  
+
+<script>
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+
+  
+
+
+  <script src="/js/src/utils.js?v=7.0.1"></script>
+
+  <script src="/js/src/motion.js?v=7.0.1"></script>
+
+
+
+  
+  
+
+
+  <script src="/js/src/affix.js?v=7.0.1"></script>
+
+  <script src="/js/src/schemes/pisces.js?v=7.0.1"></script>
+
+
+
+
+  
+  <script src="/js/src/scrollspy.js?v=7.0.1"></script>
+<script src="/js/src/post-details.js?v=7.0.1"></script>
+
+
+
+  
+
+
+  <script src="/js/src/next-boot.js?v=7.0.1"></script>
+
+
+  
+
+  
+
+  
+
+  
+
+
+  
+
+
+  
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
